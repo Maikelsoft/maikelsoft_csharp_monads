@@ -2,24 +2,34 @@
 
 namespace Maikelsoft.Monads
 {
-	internal sealed class SelectUsable<T, TResult> : IUsable<TResult>
+	internal sealed class SelectUsable<TOuter, T> : IUsable<T>
+		where TOuter : notnull
 		where T : notnull
 	{
-		private readonly IUsable<T> _outerUsable;
-		private readonly Func<T, TResult> _selector;
+		private readonly IUsable<TOuter> _outerUsable;
+		private readonly Func<TOuter, T> _resultSelector;
 
-		public SelectUsable(IUsable<T> outerUsable, Func<T, TResult> selector)
+		public SelectUsable(IUsable<TOuter> outerUsable, Func<TOuter, T> resultSelector)
 		{
 			_outerUsable = outerUsable;
-			_selector = selector;
+			_resultSelector = resultSelector;
 		}
 
-		public void Use(Action<TResult> user)
+		public void Use(Action<T> action)
 		{
 			_outerUsable.Use(obj =>
 			{
-				TResult result = _selector(obj);
-				user(result);
+				T result = _resultSelector(obj);
+				action(result);
+			});
+		}
+
+		public TResult Use<TResult>(Func<T, TResult> func)
+		{
+			return _outerUsable.Use(obj =>
+			{
+				T result = _resultSelector(obj);
+				return func(result);
 			});
 		}
 	}
