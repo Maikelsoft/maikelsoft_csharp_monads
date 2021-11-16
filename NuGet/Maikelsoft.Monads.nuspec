@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Maikelsoft.Monads</id>
+    <version>0.0.1</version>
+    <authors>Maikel de Laat</authors>
+    <owners>Maikel de Laat</owners>
+    <description>Provides two very useful monads for C#: the Exceptional Monad and the Usable Monad.</description>
+	<tags>C# functional programming fp monad monads</tags>
+    <copyright>Copyright 2021 M.A.T.M. de Laat</copyright>
+	<license type="expression">MIT</license>
+	<requireLicenseAcceptance>false</requireLicenseAcceptance>
+	<dependencies>
+      <group targetFramework="net5.0" />
+    </dependencies>
+  </metadata>
+</package>
