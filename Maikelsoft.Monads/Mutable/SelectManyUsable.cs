@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.Mutable
 {
 	internal sealed class SelectManyUsable<TOuter, TInner, T> : IUsable<T>
-		where TInner : notnull
 		where TOuter : notnull
+		where TInner : notnull
 		where T : notnull
 	{
 		private readonly IUsable<TOuter> _outerUsable;

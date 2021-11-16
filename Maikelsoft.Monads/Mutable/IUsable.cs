@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.Mutable
 {
 	public interface IUsable<out T>
 		where T : notnull

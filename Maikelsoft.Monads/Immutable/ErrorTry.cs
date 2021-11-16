@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.Immutable
 {
-	internal sealed class ErrorExceptional<T> : IExceptional<T>
+	internal sealed class ErrorTry<T> : ITry<T>
 		where T : IEquatable<T>
 	{
 		public T Value => throw new InvalidOperationException("Cannot get value in case of error.");
@@ -10,18 +10,19 @@ namespace Maikelsoft.Monads
 		public bool HasValue => false;
 		public string? ErrorMessage { get; }
 
-		public ErrorExceptional(string errorMessage)
+		public ErrorTry(string errorMessage)
 		{
 			ErrorMessage = errorMessage;
 		}
 
-		public IExceptional<TResult> Bind<TResult>(Func<T, IExceptional<TResult>> bind) where TResult 
+		public ITry<TResult> Bind<TResult>(Func<T, ITry<TResult>> bind) where TResult 
 			: IEquatable<TResult>
 		{
-			return new ErrorExceptional<TResult>(ErrorMessage!);
+			return new ErrorTry<TResult>(ErrorMessage!);
 		}
 
 		public TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue)
+			where TResult : IEquatable<TResult>
 		{
 			return whenError(ErrorMessage!);
 		}
@@ -36,7 +37,7 @@ namespace Maikelsoft.Monads
 			return ErrorMessage!.GetHashCode();
 		}
 
-		public bool Equals(IExceptional<T>? other)
+		public bool Equals(ITry<T>? other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.Immutable
 {
-	internal sealed class ValueExceptional<T> : IExceptional<T>
+	internal sealed class ValueTry<T> : ITry<T>
 		where T : IEquatable<T>
 	{
 		public T Value { get; }
@@ -10,18 +10,19 @@ namespace Maikelsoft.Monads
 		public bool HasValue => true;
 		public string? ErrorMessage => null;
 
-		public ValueExceptional(T value)
+		public ValueTry(T value)
 		{
 			Value = value;
 		}
 
-		public IExceptional<TResult> Bind<TResult>(Func<T, IExceptional<TResult>> bind) where TResult 
+		public ITry<TResult> Bind<TResult>(Func<T, ITry<TResult>> bind) where TResult 
 			: IEquatable<TResult>
 		{
 			return bind(Value);
 		}
 
 		public TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue)
+			where TResult : IEquatable<TResult>
 		{
 			return whenValue(Value);
 		}
@@ -36,7 +37,7 @@ namespace Maikelsoft.Monads
 			return Value.GetHashCode();
 		}
 
-		public bool Equals(IExceptional<T>? other)
+		public bool Equals(ITry<T>? other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;

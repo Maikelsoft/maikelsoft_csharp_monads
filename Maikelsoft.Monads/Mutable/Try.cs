@@ -2,12 +2,12 @@
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.Mutable
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	public static class Exceptional
+	public static class Try
 	{
 		/// <summary>
 		/// 
@@ -16,13 +16,12 @@ namespace Maikelsoft.Monads
 		/// <param name="funcThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IExceptional<T> Create<T>(Func<T> funcThatCanThrowException)
-			where T : IEquatable<T>
+		public static ITry<T> Create<T>(Func<T> funcThatCanThrowException)
 		{
 			try
 			{
 				T value = funcThatCanThrowException();
-				return new ValueExceptional<T>(value);
+				return new ValueTry<T>(value);
 			}
 #pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception exception)
@@ -39,8 +38,7 @@ namespace Maikelsoft.Monads
 		/// <param name="funcThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static async Task<IExceptional<T>> Create<T>(Func<Task<T>> funcThatCanThrowException)
-			where T : IEquatable<T>
+		public static async Task<ITry<T>> Create<T>(Func<Task<T>> funcThatCanThrowException)
 		{
 			try
 			{
@@ -61,8 +59,7 @@ namespace Maikelsoft.Monads
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IExceptional<T> FromValue<T>(T value) where T : IEquatable<T> =>
-			new ValueExceptional<T>(value);
+		public static ITry<T> FromValue<T>(T value) => new ValueTry<T>(value);
 
 		/// <summary>
 		/// 
@@ -71,17 +68,6 @@ namespace Maikelsoft.Monads
 		/// <param name="exception"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IExceptional<T> FromException<T>(Exception exception) where T : IEquatable<T> =>
-			new ErrorExceptional<T>(exception.Message);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="errorMessage"></param>
-		/// <returns></returns>
-		[Pure]
-		public static IExceptional<T> FromError<T>(string errorMessage) where T : IEquatable<T> =>
-			new ErrorExceptional<T>(errorMessage);
+		public static ITry<T> FromException<T>(Exception exception) => new ExceptionTry<T>(exception);
 	}
 }

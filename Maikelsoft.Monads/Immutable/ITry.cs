@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.Immutable
 {
 	// TODO: Add stack trace / details property
-	public interface IExceptional<T> : IEquatable<IExceptional<T>> 
+	public interface ITry<T> : IEquatable<ITry<T>> 
 		where T : IEquatable<T>
 	{
 		/// <summary>
@@ -34,10 +34,11 @@ namespace Maikelsoft.Monads
 		/// <param name="bind"></param>
 		/// <returns></returns>
 		[Pure]
-		IExceptional<TResult> Bind<TResult>(Func<T, IExceptional<TResult>> bind) 
+		ITry<TResult> Bind<TResult>(Func<T, ITry<TResult>> bind) 
 			where TResult : IEquatable<TResult>;
 
-		TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue);
+		TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue)
+			where TResult : IEquatable<TResult>;
 
 		void Match(Action<string> whenError, Action<T> whenValue);
 	}
