@@ -28,5 +28,11 @@ namespace Maikelsoft.Monads.Mutable
 			_cleanup(instance);
 			return result;
 		}
+
+		//public Usable<TResult> Bind<TResult>(Func<T, Usable<TResult>> bind)
+		//	where TResult : notnull
+		//{
+		//	return new SelectUsable<T, TResult>(this, bind);
+		//}
 	}
 }

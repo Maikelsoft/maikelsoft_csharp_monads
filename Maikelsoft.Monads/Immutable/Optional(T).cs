@@ -34,6 +34,16 @@ namespace Maikelsoft.Monads.Immutable
 		/// 
 		/// </summary>
 		/// <typeparam name="TResult"></typeparam>
+		/// <param name="bind"></param>
+		/// <returns></returns>
+		[Pure]
+		public abstract Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> bind)
+			where TResult : IEquatable<TResult>;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="TResult"></typeparam>
 		/// <param name="whenEmpty"></param>
 		/// <param name="whenValue"></param>
 		/// <returns></returns>
@@ -43,5 +53,33 @@ namespace Maikelsoft.Monads.Immutable
 
 		[Pure]
 		public static Optional<T> From(T value) => new ValueOptional<T>(value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="TResult"></typeparam>
+		/// <param name="selector"></param>
+		/// <returns></returns>
+		[Pure]
+		public Optional<TResult> Select<TResult>(Func<T, TResult> selector)
+			where TResult : IEquatable<TResult>
+			=> Bind(value => Optional<TResult>.From(selector(value)));
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="TOther"></typeparam>
+		/// <typeparam name="TResult"></typeparam>
+		/// <param name="bind"></param>
+		/// <param name="selector"></param>
+		/// <returns></returns>
+		[Pure]
+		public Optional<TResult> SelectMany<TOther, TResult>(Func<T, Optional<TOther>> bind,
+			Func<T, TOther, TResult> selector)
+			where TOther : IEquatable<TOther>
+			where TResult : IEquatable<TResult>
+			=> Bind(a => bind(a).Select(b => selector(a, b)));
 	}
 }

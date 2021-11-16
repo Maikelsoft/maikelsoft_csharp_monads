@@ -22,6 +22,11 @@ namespace Maikelsoft.Monads.Immutable
 			whenEmpty();
 		}
 
+		public override Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> bind)
+		{
+			return Optional<TResult>.Empty;
+		}
+
 		public override TResult Match<TResult>(Func<TResult> whenEmpty, Func<T, TResult> whenValue)
 		{
 			return whenEmpty();

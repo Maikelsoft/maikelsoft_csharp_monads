@@ -49,12 +49,12 @@ namespace Maikelsoft.Monads.Immutable
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <typeparam name="TResult"></typeparam>
-		/// <param name="selectorThatCanThrowException"></param>
+		/// <param name="selector"></param>
 		/// <returns></returns>
 		[Pure]
-		public Try<TResult> Select<TResult>(Func<T, TResult> selectorThatCanThrowException)
+		public Try<TResult> Select<TResult>(Func<T, TResult> selector)
 			where TResult : IEquatable<TResult>
-			=> Bind(value => Try.Create(() => selectorThatCanThrowException(value)));
+			=> Bind(value => Try.Create(() => selector(value)));
 
 		/// <summary>
 		/// 
@@ -63,13 +63,13 @@ namespace Maikelsoft.Monads.Immutable
 		/// <typeparam name="TOther"></typeparam>
 		/// <typeparam name="TResult"></typeparam>
 		/// <param name="bind"></param>
-		/// <param name="selectorThatCanThrowException"></param>
+		/// <param name="selector"></param>
 		/// <returns></returns>
 		[Pure]
 		public Try<TResult> SelectMany<TOther, TResult>(Func<T, Try<TOther>> bind,
-			Func<T, TOther, TResult> selectorThatCanThrowException)
+			Func<T, TOther, TResult> selector)
 			where TOther : IEquatable<TOther>
 			where TResult : IEquatable<TResult>
-			=> Bind(a => bind(a).Select(b => selectorThatCanThrowException(a, b)));
+			=> Bind(a => bind(a).Select(b => selector(a, b)));
 	}
 }
