@@ -2,32 +2,30 @@
 
 namespace Maikelsoft.Monads.Immutable
 {
-	internal sealed class ErrorTry<T> : ITry<T>
+	internal sealed class ErrorTry<T> : Try<T>
 		where T : IEquatable<T>
 	{
-		public T Value => throw new InvalidOperationException("Cannot get value in case of error.");
-		public bool HasError => true;
-		public bool HasValue => false;
-		public string? ErrorMessage { get; }
+		public override T Value => throw new InvalidOperationException("No value available.");
+		public override bool HasError => true;
+		public override bool HasValue => false;
+		public override string? ErrorMessage { get; }
 
 		public ErrorTry(string errorMessage)
 		{
 			ErrorMessage = errorMessage;
 		}
 
-		public ITry<TResult> Bind<TResult>(Func<T, ITry<TResult>> bind) where TResult 
-			: IEquatable<TResult>
+		public override Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind)
 		{
 			return new ErrorTry<TResult>(ErrorMessage!);
 		}
 
-		public TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue)
-			where TResult : IEquatable<TResult>
+		public override TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue)
 		{
 			return whenError(ErrorMessage!);
 		}
 
-		public void Match(Action<string> whenError, Action<T> whenValue)
+		public override void Match(Action<string> whenError, Action<T> whenValue)
 		{
 			whenError(ErrorMessage!);
 		}
@@ -37,7 +35,7 @@ namespace Maikelsoft.Monads.Immutable
 			return ErrorMessage!.GetHashCode();
 		}
 
-		public bool Equals(ITry<T>? other)
+		public override bool Equals(Try<T>? other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;

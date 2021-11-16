@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Maikelsoft.Monads.Mutable
+namespace Maikelsoft.Monads.Immutable
 {
-	public abstract class Try<T>
+	// TODO: Add stack trace / details property
+	public abstract class Try<T> : IEquatable<Try<T>>
+		where T : IEquatable<T>
 	{
 		/// <summary>
 		/// 
@@ -18,12 +20,12 @@ namespace Maikelsoft.Monads.Mutable
 		/// <summary>
 		/// 
 		/// </summary>
-		public abstract bool HasException { get; }
+		public abstract bool HasError { get; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public abstract Exception? Exception { get; }
+		public abstract string? ErrorMessage { get; }
 
 		/// <summary>
 		/// Binds the wrapped value.
@@ -32,11 +34,15 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="bind"></param>
 		/// <returns></returns>
 		[Pure]
-		public abstract Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind);
+		public abstract Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind)
+			where TResult : IEquatable<TResult>;
 
-		public abstract TResult Match<TResult>(Func<Exception, TResult> whenException, Func<T, TResult> whenValue);
+		public abstract TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue)
+			where TResult : IEquatable<TResult>;
 
-		public abstract void Match(Action<Exception> whenException, Action<T> whenValue);
+		public abstract void Match(Action<string> whenError, Action<T> whenValue);
+
+		public abstract bool Equals(Try<T>? other);
 
 		/// <summary>
 		/// 
@@ -47,6 +53,7 @@ namespace Maikelsoft.Monads.Mutable
 		/// <returns></returns>
 		[Pure]
 		public Try<TResult> Select<TResult>(Func<T, TResult> selectorThatCanThrowException)
+			where TResult : IEquatable<TResult>
 			=> Bind(value => Try.Create(() => selectorThatCanThrowException(value)));
 
 		/// <summary>
@@ -61,6 +68,8 @@ namespace Maikelsoft.Monads.Mutable
 		[Pure]
 		public Try<TResult> SelectMany<TOther, TResult>(Func<T, Try<TOther>> bind,
 			Func<T, TOther, TResult> selectorThatCanThrowException)
+			where TOther : IEquatable<TOther>
+			where TResult : IEquatable<TResult>
 			=> Bind(a => bind(a).Select(b => selectorThatCanThrowException(a, b)));
 	}
 }

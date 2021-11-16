@@ -16,7 +16,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="funcThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<T> Create<T>(Func<T> funcThatCanThrowException)
+		public static Try<T> Create<T>(Func<T> funcThatCanThrowException)
 			where T : IEquatable<T>
 		{
 			try
@@ -39,7 +39,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="funcThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static async Task<ITry<T>> Create<T>(Func<Task<T>> funcThatCanThrowException)
+		public static async Task<Try<T>> Create<T>(Func<Task<T>> funcThatCanThrowException)
 			where T : IEquatable<T>
 		{
 			try
@@ -61,7 +61,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<T> FromValue<T>(T value) where T : IEquatable<T> =>
+		public static Try<T> FromValue<T>(T value) where T : IEquatable<T> =>
 			new ValueTry<T>(value);
 
 		/// <summary>
@@ -71,7 +71,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="exception"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<T> FromException<T>(Exception exception) where T : IEquatable<T> =>
+		public static Try<T> FromException<T>(Exception exception) where T : IEquatable<T> =>
 			new ErrorTry<T>(exception.Message);
 
 		/// <summary>
@@ -81,7 +81,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="errorMessage"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<T> FromError<T>(string errorMessage) where T : IEquatable<T> =>
+		public static Try<T> FromError<T>(string errorMessage) where T : IEquatable<T> =>
 			new ErrorTry<T>(errorMessage);
 	}
 }
