@@ -2,29 +2,29 @@
 
 namespace Maikelsoft.Monads.Mutable
 {
-	internal sealed class ExceptionTry<T> : ITry<T>
+	internal sealed class ExceptionTry<T> : Try<T>
 	{
-		public T Value => throw new InvalidOperationException("Cannot get value in case of exception.");
-		public bool HasException => true;
-		public bool HasValue => false;
-		public Exception? Exception { get; }
+		public override T Value => throw new InvalidOperationException("No value available.");
+		public override bool HasException => true;
+		public override bool HasValue => false;
+		public override Exception? Exception { get; }
 
 		public ExceptionTry(Exception exception)
 		{
 			Exception = exception;
 		}
 
-		public ITry<TResult> Bind<TResult>(Func<T, ITry<TResult>> bind)
+		public override Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind)
 		{
 			return new ExceptionTry<TResult>(Exception!);
 		}
 
-		public TResult Match<TResult>(Func<Exception, TResult> whenException, Func<T, TResult> whenValue)
+		public override TResult Match<TResult>(Func<Exception, TResult> whenException, Func<T, TResult> whenValue)
 		{
 			return whenException(Exception!);
 		}
 
-		public void Match(Action<Exception> whenException, Action<T> whenValue)
+		public override void Match(Action<Exception> whenException, Action<T> whenValue)
 		{
 			whenException(Exception!);
 		}

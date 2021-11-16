@@ -3,34 +3,6 @@ using System.Diagnostics.Contracts;
 
 namespace Maikelsoft.Monads.Mutable
 {
-	internal sealed class Usable<T> : IUsable<T>
-		where T : notnull
-	{
-		private readonly Func<T> _create;
-		private readonly Action<T> _cleanup;
-
-		internal Usable(Func<T> create, Action<T> cleanup)
-		{
-			_create = create;
-			_cleanup = cleanup;
-		}
-
-		public void Use(Action<T> action)
-		{
-			T instance = _create();
-			action(instance);
-			_cleanup(instance);
-		}
-
-		public TResult Use<TResult>(Func<T, TResult> func)
-		{
-			T instance = _create();
-			TResult result = func(instance);
-			_cleanup(instance);
-			return result;
-		}
-	}
-
 	public static class Usable
 	{
 		/// <summary>
@@ -41,10 +13,10 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="cleanup"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IUsable<T> Create<T>(Func<T> create, Action<T> cleanup)
+		public static Usable<T> Create<T>(Func<T> create, Action<T> cleanup)
 			where T : notnull
 		{
-			return new Usable<T>(create, cleanup);
+			return new DeferredUsable<T>(create, cleanup);
 		}
 
 		/// <summary>
@@ -54,10 +26,10 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="create"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IUsable<T> Create<T>(Func<T> create)
+		public static Usable<T> Create<T>(Func<T> create)
 			where T : IDisposable
 		{
-			return new Usable<T>(create, disposable => disposable.Dispose());
+			return new DeferredUsable<T>(create, disposable => disposable.Dispose());
 		}
 
 		/// <summary>
@@ -67,10 +39,10 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="create"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IUsable<ITry<T>> Create<T>(Func<ITry<T>> create)
+		public static Usable<Try<T>> Create<T>(Func<Try<T>> create)
 			where T : IDisposable
 		{
-			return new Usable<ITry<T>>(create, x =>
+			return new DeferredUsable<Try<T>>(create, x =>
 			{
 				if (x.HasValue)
 				{
@@ -88,7 +60,7 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="resultSelector"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IUsable<T> Select<TOuter, T>(this IUsable<TOuter> outerUsable, Func<TOuter, T> resultSelector)
+		public static Usable<T> Select<TOuter, T>(this Usable<TOuter> outerUsable, Func<TOuter, T> resultSelector)
 			where TOuter : notnull
 			where T : notnull
 		{
@@ -106,8 +78,8 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="resultSelector"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IUsable<T> SelectMany<TOuter, TInner, T>(this IUsable<TOuter> outerUsable, 
-			Func<TOuter, IUsable<TInner>> innerUsableSelector,
+		public static Usable<T> SelectMany<TOuter, TInner, T>(this Usable<TOuter> outerUsable, 
+			Func<TOuter, Usable<TInner>> innerUsableSelector,
 			Func<TOuter, TInner, T> resultSelector)
 			where TOuter : notnull
 			where TInner : notnull

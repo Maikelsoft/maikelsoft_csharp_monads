@@ -2,16 +2,16 @@
 
 namespace Maikelsoft.Monads.Mutable
 {
-	internal sealed class SelectManyUsable<TOuter, TInner, T> : IUsable<T>
+	internal sealed class SelectManyUsable<TOuter, TInner, T> : Usable<T>
 		where TOuter : notnull
 		where TInner : notnull
 		where T : notnull
 	{
-		private readonly IUsable<TOuter> _outerUsable;
-		private readonly Func<TOuter, IUsable<TInner>> _innerUsableSelector;
+		private readonly Usable<TOuter> _outerUsable;
+		private readonly Func<TOuter, Usable<TInner>> _innerUsableSelector;
 		private readonly Func<TOuter, TInner, T> _resultSelector;
 
-		public SelectManyUsable(IUsable<TOuter> outerUsable, Func<TOuter, IUsable<TInner>> innerUsableSelector,
+		public SelectManyUsable(Usable<TOuter> outerUsable, Func<TOuter, Usable<TInner>> innerUsableSelector,
 			Func<TOuter, TInner, T> resultSelector)
 		{
 			_outerUsable = outerUsable;
@@ -19,7 +19,7 @@ namespace Maikelsoft.Monads.Mutable
 			_innerUsableSelector = innerUsableSelector;
 		}
 
-		public void Use(Action<T> action)
+		public override void Use(Action<T> action)
 		{
 			_outerUsable.Use(outerScope =>
 			{
@@ -31,7 +31,7 @@ namespace Maikelsoft.Monads.Mutable
 			});
 		}
 
-		public TResult Use<TResult>(Func<T, TResult> func)
+		public override TResult Use<TResult>(Func<T, TResult> func)
 		{
 			return _outerUsable.Use(outerScope =>
 			{

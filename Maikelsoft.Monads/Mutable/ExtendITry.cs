@@ -14,7 +14,7 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="selectorThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<TResult> TrySelect<T, TResult>(this ITry<T> source,
+		public static Try<TResult> TrySelect<T, TResult>(this Try<T> source,
 			Func<T, TResult> selectorThatCanThrowException)
 			=> source.Bind(value => Try.Create(() => selectorThatCanThrowException(value)));
 
@@ -29,8 +29,8 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="selectorThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<TResult> TrySelectMany<T, TOther, TResult>(this ITry<T> source,
-			Func<T, ITry<TOther>> bind, Func<T, TOther, TResult> selectorThatCanThrowException)
+		public static Try<TResult> TrySelectMany<T, TOther, TResult>(this Try<T> source,
+			Func<T, Try<TOther>> bind, Func<T, TOther, TResult> selectorThatCanThrowException)
 			=> source.Bind(a => bind(a).TrySelect(b => selectorThatCanThrowException(a, b)));
 	}
 }

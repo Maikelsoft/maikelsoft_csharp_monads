@@ -16,7 +16,7 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="funcThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<T> Create<T>(Func<T> funcThatCanThrowException)
+		public static Try<T> Create<T>(Func<T> funcThatCanThrowException)
 		{
 			try
 			{
@@ -38,7 +38,7 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="funcThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static async Task<ITry<T>> Create<T>(Func<Task<T>> funcThatCanThrowException)
+		public static async Task<Try<T>> Create<T>(Func<Task<T>> funcThatCanThrowException)
 		{
 			try
 			{
@@ -59,7 +59,7 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<T> FromValue<T>(T value) => new ValueTry<T>(value);
+		public static Try<T> FromValue<T>(T value) => new ValueTry<T>(value);
 
 		/// <summary>
 		/// 
@@ -68,6 +68,6 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="exception"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<T> FromException<T>(Exception exception) => new ExceptionTry<T>(exception);
+		public static Try<T> FromException<T>(Exception exception) => new ExceptionTry<T>(exception);
 	}
 }

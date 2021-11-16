@@ -2,29 +2,29 @@
 
 namespace Maikelsoft.Monads.Mutable
 {
-	internal sealed class ValueTry<T> : ITry<T>
+	internal sealed class ValueTry<T> : Try<T>
 	{
-		public T Value { get; }
-		public bool HasException => false;
-		public bool HasValue => true;
-		public Exception? Exception => null;
+		public override T Value { get; }
+		public override bool HasException => false;
+		public override bool HasValue => true;
+		public override Exception? Exception => null;
 
 		public ValueTry(T value)
 		{
 			Value = value;
 		}
 
-		public ITry<TResult> Bind<TResult>(Func<T, ITry<TResult>> bind)
+		public override Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind)
 		{
 			return bind(Value);
 		}
 
-		public TResult Match<TResult>(Func<Exception, TResult> whenException, Func<T, TResult> whenValue)
+		public override TResult Match<TResult>(Func<Exception, TResult> whenException, Func<T, TResult> whenValue)
 		{
 			return whenValue(Value);
 		}
 
-		public void Match(Action<Exception> whenException, Action<T> whenValue)
+		public override void Match(Action<Exception> whenException, Action<T> whenValue)
 		{
 			whenValue(Value);
 		}
