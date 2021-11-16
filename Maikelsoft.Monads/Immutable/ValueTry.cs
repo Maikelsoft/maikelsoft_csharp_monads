@@ -41,7 +41,7 @@ namespace Maikelsoft.Monads.Immutable
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			return Value.Equals(other.Value);
+			return other.HasValue && Value.Equals(other.Value);
 		}
 	}
 }

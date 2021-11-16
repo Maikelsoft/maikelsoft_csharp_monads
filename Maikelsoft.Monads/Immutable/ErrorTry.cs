@@ -41,7 +41,7 @@ namespace Maikelsoft.Monads.Immutable
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			return ErrorMessage!.Equals(other.ErrorMessage, StringComparison.Ordinal);
+			return other.HasError && ErrorMessage!.Equals(other.ErrorMessage);
 		}
 	}
 }

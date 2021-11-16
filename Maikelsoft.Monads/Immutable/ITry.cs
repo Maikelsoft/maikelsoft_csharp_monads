@@ -10,18 +10,18 @@ namespace Maikelsoft.Monads.Immutable
 		/// <summary>
 		/// 
 		/// </summary>
-		T Value { get; }
+		bool HasValue { get; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		T Value { get; }
+		
 		/// <summary>
 		/// 
 		/// </summary>
 		bool HasError { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		bool HasValue { get; }
-
+		
 		/// <summary>
 		/// 
 		/// </summary>

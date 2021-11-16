@@ -8,18 +8,18 @@ namespace Maikelsoft.Monads.Mutable
 		/// <summary>
 		/// 
 		/// </summary>
+		bool HasValue { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
 		T Value { get; }
 
 		/// <summary>
 		/// 
 		/// </summary>
 		bool HasException { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		bool HasValue { get; }
-
+		
 		/// <summary>
 		/// 
 		/// </summary>

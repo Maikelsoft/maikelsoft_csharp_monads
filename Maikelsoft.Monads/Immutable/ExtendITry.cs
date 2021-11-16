@@ -11,14 +11,14 @@ namespace Maikelsoft.Monads.Immutable
 		/// <typeparam name="T"></typeparam>
 		/// <typeparam name="TResult"></typeparam>
 		/// <param name="source"></param>
-		/// <param name="funcThatCanThrowException"></param>
+		/// <param name="selectorThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<TResult> Select<T, TResult>(this ITry<T> source,
-			Func<T, TResult> funcThatCanThrowException)
+		public static ITry<TResult> TrySelect<T, TResult>(this ITry<T> source,
+			Func<T, TResult> selectorThatCanThrowException)
 			where T : IEquatable<T>
 			where TResult : IEquatable<TResult>
-			=> source.Bind(value => Try.Create(() => funcThatCanThrowException(value)));
+			=> source.Bind(value => Try.Create(() => selectorThatCanThrowException(value)));
 
 		/// <summary>
 		/// 
@@ -28,14 +28,14 @@ namespace Maikelsoft.Monads.Immutable
 		/// <typeparam name="TResult"></typeparam>
 		/// <param name="source"></param>
 		/// <param name="bind"></param>
-		/// <param name="project"></param>
+		/// <param name="selectorThatCanThrowException"></param>
 		/// <returns></returns>
 		[Pure]
-		public static ITry<TResult> SelectMany<T, TOther, TResult>(this ITry<T> source,
-			Func<T, ITry<TOther>> bind, Func<T, TOther, TResult> project) 
+		public static ITry<TResult> TrySelectMany<T, TOther, TResult>(this ITry<T> source,
+			Func<T, ITry<TOther>> bind, Func<T, TOther, TResult> selectorThatCanThrowException) 
 			where T : IEquatable<T>
 			where TOther : IEquatable<TOther>
 			where TResult : IEquatable<TResult>
-			=> source.Bind(a => bind(a).Select(b => project(a, b)));
+			=> source.Bind(a => bind(a).TrySelect(b => selectorThatCanThrowException(a, b)));
 	}
 }
