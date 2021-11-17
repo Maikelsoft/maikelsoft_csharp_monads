@@ -8,7 +8,7 @@ namespace Maikelsoft.Monads.Immutable
 		public override T Value { get; }
 		public override bool HasError => false;
 		public override bool HasValue => true;
-		public override string? ErrorMessage => null;
+		public override Error? Error => null;
 
 		public ValueTry(T value)
 		{
@@ -20,12 +20,12 @@ namespace Maikelsoft.Monads.Immutable
 			return bind(Value);
 		}
 
-		public override TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue)
+		public override TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue)
 		{
 			return whenValue(Value);
 		}
 
-		public override void Match(Action<string> whenError, Action<T> whenValue)
+		public override void Match(Action<Error> whenError, Action<T> whenValue)
 		{
 			whenValue(Value);
 		}

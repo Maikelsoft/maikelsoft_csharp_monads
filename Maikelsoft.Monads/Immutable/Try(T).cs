@@ -3,7 +3,6 @@ using System.Diagnostics.Contracts;
 
 namespace Maikelsoft.Monads.Immutable
 {
-	// TODO: Add stack trace / details property
 	public abstract class Try<T> : IEquatable<Try<T>>
 		where T : IEquatable<T>
 	{
@@ -25,7 +24,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <summary>
 		/// 
 		/// </summary>
-		public abstract string? ErrorMessage { get; }
+		public abstract Error? Error { get; }
 
 		/// <summary>
 		/// Binds the wrapped value.
@@ -37,10 +36,10 @@ namespace Maikelsoft.Monads.Immutable
 		public abstract Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind)
 			where TResult : IEquatable<TResult>;
 
-		public abstract TResult Match<TResult>(Func<string, TResult> whenError, Func<T, TResult> whenValue)
+		public abstract TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue)
 			where TResult : IEquatable<TResult>;
 
-		public abstract void Match(Action<string> whenError, Action<T> whenValue);
+		public abstract void Match(Action<Error> whenError, Action<T> whenValue);
 
 		public abstract bool Equals(Try<T>? other);
 

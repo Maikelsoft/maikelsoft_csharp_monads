@@ -71,8 +71,9 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="exception"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromException<T>(Exception exception) where T : IEquatable<T> =>
-			new ErrorTry<T>(exception.Message);
+		public static Try<T> FromException<T>(Exception exception) 
+			where T : IEquatable<T> =>
+			new ErrorTry<T>(Error.FromException(exception));
 
 		/// <summary>
 		/// 
@@ -81,7 +82,8 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="errorMessage"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromError<T>(string errorMessage) where T : IEquatable<T> =>
-			new ErrorTry<T>(errorMessage);
+		public static Try<T> FromError<T>(string errorMessage, string? details = null) 
+			where T : IEquatable<T> =>
+			new ErrorTry<T>(new Error(errorMessage, details));
 	}
 }
