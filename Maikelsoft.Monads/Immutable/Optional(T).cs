@@ -79,7 +79,21 @@ namespace Maikelsoft.Monads.Immutable
 		public Optional<TResult> SelectMany<TOther, TResult>(Func<T, Optional<TOther>> bind,
 			Func<T, TOther, TResult> selector)
 			where TOther : IEquatable<TOther>
-			where TResult : IEquatable<TResult>
-			=> Bind(a => bind(a).Select(b => selector(a, b)));
+			where TResult : IEquatable<TResult> => 
+			Bind(value1 => bind(value1).Select(value2 => selector(value1, value2)));
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="TOther"></typeparam>
+		/// <typeparam name="TResult"></typeparam>
+		/// <param name="other"></param>
+		/// <param name="resultSelector"></param>
+		/// <returns></returns>
+		[Pure]
+		public Optional<TResult> CombineWith<TOther, TResult>(Optional<TOther> other, Func<T, TOther, TResult> resultSelector)
+			where TOther : IEquatable<TOther>
+			where TResult : IEquatable<TResult> =>
+			Bind(value1 => other.Select(value2 => resultSelector(value1, value2)));
 	}
 }

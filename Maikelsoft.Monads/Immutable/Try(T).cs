@@ -36,6 +36,12 @@ namespace Maikelsoft.Monads.Immutable
 		public abstract Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind)
 			where TResult : IEquatable<TResult>;
 
+		public void Deconstruct(out Error? error, out T value)
+		{
+			error = Error;
+			value = Value;
+		}
+
 		public abstract TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue)
 			where TResult : IEquatable<TResult>;
 
@@ -51,9 +57,8 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="selector"></param>
 		/// <returns></returns>
 		[Pure]
-		public Try<TResult> Select<TResult>(Func<T, TResult> selector)
-			where TResult : IEquatable<TResult>
-			=> Bind(value => Try.Create(() => selector(value)));
+		public Try<TResult> Select<TResult>(Func<T, TResult> selector) where TResult : IEquatable<TResult> =>
+			Bind(value => Try.Create(() => selector(value)));
 
 		/// <summary>
 		/// 
@@ -61,14 +66,28 @@ namespace Maikelsoft.Monads.Immutable
 		/// <typeparam name="T"></typeparam>
 		/// <typeparam name="TOther"></typeparam>
 		/// <typeparam name="TResult"></typeparam>
-		/// <param name="bind"></param>
-		/// <param name="selector"></param>
+		/// <param name="trySelector"></param>
+		/// <param name="resultSelector"></param>
 		/// <returns></returns>
 		[Pure]
-		public Try<TResult> SelectMany<TOther, TResult>(Func<T, Try<TOther>> bind,
-			Func<T, TOther, TResult> selector)
+		public Try<TResult> SelectMany<TOther, TResult>(Func<T, Try<TOther>> trySelector,
+			Func<T, TOther, TResult> resultSelector)
 			where TOther : IEquatable<TOther>
-			where TResult : IEquatable<TResult>
-			=> Bind(a => bind(a).Select(b => selector(a, b)));
+			where TResult : IEquatable<TResult> =>
+			Bind(value1 => trySelector(value1).Select(value2 => resultSelector(value1, value2)));
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="TOther"></typeparam>
+		/// <typeparam name="TResult"></typeparam>
+		/// <param name="other"></param>
+		/// <param name="resultSelector"></param>
+		/// <returns></returns>
+		[Pure]
+		public Try<TResult> CombineWith<TOther, TResult>(Try<TOther> other, Func<T, TOther, TResult> resultSelector)
+			where TOther : IEquatable<TOther>
+			where TResult : IEquatable<TResult> =>
+			Bind(value1 => other.Select(value2 => resultSelector(value1, value2)));
 	}
 }

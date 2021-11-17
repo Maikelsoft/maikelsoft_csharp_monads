@@ -56,16 +56,14 @@ namespace Maikelsoft.Monads.Mutable
 		/// </summary>
 		/// <typeparam name="TOuter"></typeparam>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="outerUsable"></param>
+		/// <param name="source"></param>
 		/// <param name="resultSelector"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Usable<T> Select<TOuter, T>(this Usable<TOuter> outerUsable, Func<TOuter, T> resultSelector)
+		public static Usable<T> Select<TOuter, T>(this Usable<TOuter> source, Func<TOuter, T> resultSelector)
 			where TOuter : notnull
-			where T : notnull
-		{
-			return new SelectUsable<TOuter, T>(outerUsable, resultSelector);
-		}
+			where T : notnull =>
+			new SelectUsable<TOuter, T>(source, resultSelector);
 
 		/// <summary>
 		/// 
@@ -73,19 +71,17 @@ namespace Maikelsoft.Monads.Mutable
 		/// <typeparam name="TOuter"></typeparam>
 		/// <typeparam name="TInner"></typeparam>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="outerUsable"></param>
-		/// <param name="innerUsableSelector"></param>
+		/// <param name="source"></param>
+		/// <param name="usableSelector"></param>
 		/// <param name="resultSelector"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Usable<T> SelectMany<TOuter, TInner, T>(this Usable<TOuter> outerUsable, 
-			Func<TOuter, Usable<TInner>> innerUsableSelector,
+		public static Usable<T> SelectMany<TOuter, TInner, T>(this Usable<TOuter> source, 
+			Func<TOuter, Usable<TInner>> usableSelector,
 			Func<TOuter, TInner, T> resultSelector)
 			where TOuter : notnull
 			where TInner : notnull
-			where T : notnull
-		{
-			return new SelectManyUsable<TOuter,TInner,T>(outerUsable, innerUsableSelector, resultSelector);
-		}
+			where T : notnull =>
+			new SelectManyUsable<TOuter,TInner,T>(source, usableSelector, resultSelector);
 	}
 }

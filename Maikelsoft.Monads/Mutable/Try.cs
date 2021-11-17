@@ -13,14 +13,14 @@ namespace Maikelsoft.Monads.Mutable
 		/// 
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="funcThatCanThrowException"></param>
+		/// <param name="func"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> Create<T>(Func<T> funcThatCanThrowException)
+		public static Try<T> Create<T>(Func<T> func)
 		{
 			try
 			{
-				T value = funcThatCanThrowException();
+				T value = func();
 				return new ValueTry<T>(value);
 			}
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -35,14 +35,14 @@ namespace Maikelsoft.Monads.Mutable
 		/// 
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="funcThatCanThrowException"></param>
+		/// <param name="func"></param>
 		/// <returns></returns>
 		[Pure]
-		public static async Task<Try<T>> Create<T>(Func<Task<T>> funcThatCanThrowException)
+		public static async Task<Try<T>> Create<T>(Func<Task<T>> func)
 		{
 			try
 			{
-				return FromValue(await funcThatCanThrowException().ConfigureAwait(false));
+				return FromValue(await func().ConfigureAwait(false));
 			}
 #pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception exception)

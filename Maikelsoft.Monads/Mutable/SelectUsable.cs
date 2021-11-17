@@ -6,18 +6,18 @@ namespace Maikelsoft.Monads.Mutable
 		where TOuter : notnull
 		where T : notnull
 	{
-		private readonly Usable<TOuter> _outerUsable;
+		private readonly Usable<TOuter> _source;
 		private readonly Func<TOuter, T> _resultSelector;
 
-		public SelectUsable(Usable<TOuter> outerUsable, Func<TOuter, T> resultSelector)
+		public SelectUsable(Usable<TOuter> source, Func<TOuter, T> resultSelector)
 		{
-			_outerUsable = outerUsable;
+			_source = source;
 			_resultSelector = resultSelector;
 		}
 
 		public override void Use(Action<T> action)
 		{
-			_outerUsable.Use(obj =>
+			_source.Use(obj =>
 			{
 				T result = _resultSelector(obj);
 				action(result);
@@ -26,7 +26,7 @@ namespace Maikelsoft.Monads.Mutable
 
 		public override TResult Use<TResult>(Func<T, TResult> func)
 		{
-			return _outerUsable.Use(obj =>
+			return _source.Use(obj =>
 			{
 				T result = _resultSelector(obj);
 				return func(result);

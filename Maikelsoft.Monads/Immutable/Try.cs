@@ -13,15 +13,15 @@ namespace Maikelsoft.Monads.Immutable
 		/// 
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="funcThatCanThrowException"></param>
+		/// <param name="func"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> Create<T>(Func<T> funcThatCanThrowException)
+		public static Try<T> Create<T>(Func<T> func)
 			where T : IEquatable<T>
 		{
 			try
 			{
-				T value = funcThatCanThrowException();
+				T value = func();
 				return new ValueTry<T>(value);
 			}
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -36,15 +36,15 @@ namespace Maikelsoft.Monads.Immutable
 		/// 
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="funcThatCanThrowException"></param>
+		/// <param name="func"></param>
 		/// <returns></returns>
 		[Pure]
-		public static async Task<Try<T>> Create<T>(Func<Task<T>> funcThatCanThrowException)
+		public static async Task<Try<T>> Create<T>(Func<Task<T>> func)
 			where T : IEquatable<T>
 		{
 			try
 			{
-				return FromValue(await funcThatCanThrowException().ConfigureAwait(false));
+				return FromValue(await func().ConfigureAwait(false));
 			}
 #pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception exception)
@@ -80,10 +80,20 @@ namespace Maikelsoft.Monads.Immutable
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="errorMessage"></param>
+		/// <param name="details"></param>
 		/// <returns></returns>
 		[Pure]
 		public static Try<T> FromError<T>(string errorMessage, string? details = null) 
-			where T : IEquatable<T> =>
-			new ErrorTry<T>(new Error(errorMessage, details));
+			where T : IEquatable<T> => new ErrorTry<T>(new Error(errorMessage, details));
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="error"></param>
+		/// <returns></returns>
+		[Pure]
+		public static Try<T> FromError<T>(Error error) 
+			where T : IEquatable<T> => new ErrorTry<T>(error);
 	}
 }

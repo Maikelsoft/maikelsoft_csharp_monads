@@ -7,35 +7,35 @@ namespace Maikelsoft.Monads.Mutable
 		where TInner : notnull
 		where T : notnull
 	{
-		private readonly Usable<TOuter> _outerUsable;
-		private readonly Func<TOuter, Usable<TInner>> _innerUsableSelector;
+		private readonly Usable<TOuter> _source;
+		private readonly Func<TOuter, Usable<TInner>> _usableSelector;
 		private readonly Func<TOuter, TInner, T> _resultSelector;
 
-		public SelectManyUsable(Usable<TOuter> outerUsable, Func<TOuter, Usable<TInner>> innerUsableSelector,
+		public SelectManyUsable(Usable<TOuter> source, Func<TOuter, Usable<TInner>> usableSelector,
 			Func<TOuter, TInner, T> resultSelector)
 		{
-			_outerUsable = outerUsable;
+			_source = source;
 			_resultSelector = resultSelector;
-			_innerUsableSelector = innerUsableSelector;
+			_usableSelector = usableSelector;
 		}
 
 		public override void Use(Action<T> action)
 		{
-			_outerUsable.Use(outerScope =>
+			_source.Use(outerScope =>
 			{
-				_innerUsableSelector(outerScope).Use(innerScope =>
+				_usableSelector(outerScope).Use(innerScope =>
 				{
-					T value = _resultSelector(outerScope, innerScope);
-					action(value);
+					T result = _resultSelector(outerScope, innerScope);
+					action(result);
 				});
 			});
 		}
 
 		public override TResult Use<TResult>(Func<T, TResult> func)
 		{
-			return _outerUsable.Use(outerScope =>
+			return _source.Use(outerScope =>
 			{
-				return _innerUsableSelector(outerScope).Use(innerScope =>
+				return _usableSelector(outerScope).Use(innerScope =>
 				{
 					T value = _resultSelector(outerScope, innerScope);
 					return func(value);
