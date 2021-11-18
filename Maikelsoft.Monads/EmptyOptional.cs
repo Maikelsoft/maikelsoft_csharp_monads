@@ -1,20 +1,27 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads.Immutable
+namespace Maikelsoft.Monads
 {
 	internal sealed class EmptyOptional<T> : Optional<T>
-		where T : IEquatable<T>
+		where T : notnull
 	{
 		public override T Value => throw new InvalidOperationException("Cannot get value.");
 		public override bool HasValue => false;
 
 		public override int GetHashCode() => typeof(T).GetHashCode();
 
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			return obj is EmptyOptional<T>;
+		}
+
 		public override bool Equals(Optional<T>? other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			return !other.HasValue;
+			return other is EmptyOptional<T>;
 		}
 
 		public override void Match(Action whenEmpty, Action<T> whenValue)

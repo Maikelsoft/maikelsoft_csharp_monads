@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
-namespace Maikelsoft.Monads.Immutable
+namespace Maikelsoft.Monads
 {
 	/// <summary>
 	/// 
@@ -17,7 +17,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <returns></returns>
 		[Pure]
 		public static Try<T> Create<T>(Func<T> func)
-			where T : IEquatable<T>
+			where T : notnull
 		{
 			try
 			{
@@ -40,7 +40,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <returns></returns>
 		[Pure]
 		public static async Task<Try<T>> Create<T>(Func<Task<T>> func)
-			where T : IEquatable<T>
+			where T : notnull
 		{
 			try
 			{
@@ -61,8 +61,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromValue<T>(T value) where T : IEquatable<T> =>
-			new ValueTry<T>(value);
+		public static Try<T> FromValue<T>(T value) where T : notnull => new ValueTry<T>(value);
 
 		/// <summary>
 		/// 
@@ -71,8 +70,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="exception"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromException<T>(Exception exception) 
-			where T : IEquatable<T> =>
+		public static Try<T> FromException<T>(Exception exception) where T : notnull =>
 			new ErrorTry<T>(Error.FromException(exception));
 
 		/// <summary>
@@ -83,8 +81,8 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="details"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromError<T>(string errorMessage, string? details = null) 
-			where T : IEquatable<T> => new ErrorTry<T>(new Error(errorMessage, details));
+		public static Try<T> FromError<T>(string errorMessage, string? details = null) where T : notnull
+			=> new ErrorTry<T>(new Error(errorMessage, details));
 
 		/// <summary>
 		/// 
@@ -93,7 +91,6 @@ namespace Maikelsoft.Monads.Immutable
 		/// <param name="error"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromError<T>(Error error) 
-			where T : IEquatable<T> => new ErrorTry<T>(error);
+		public static Try<T> FromError<T>(Error error) where T : notnull => new ErrorTry<T>(error);
 	}
 }

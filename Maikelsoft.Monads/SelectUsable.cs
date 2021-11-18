@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads.Mutable
+namespace Maikelsoft.Monads
 {
 	internal sealed class SelectUsable<TOuter, T> : Usable<T>
 		where TOuter : notnull

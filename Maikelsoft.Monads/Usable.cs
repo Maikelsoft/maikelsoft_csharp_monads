@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Maikelsoft.Monads.Mutable
+namespace Maikelsoft.Monads
 {
 	public static class Usable
 	{

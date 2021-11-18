@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads.Immutable
+namespace Maikelsoft.Monads
 {
 	internal sealed class ValueOptional<T> : Optional<T>
-		where T : IEquatable<T>
+		where T : notnull
 	{
 		public override T Value { get; }
 		public override bool HasValue => true;
@@ -14,6 +14,13 @@ namespace Maikelsoft.Monads.Immutable
 		}
 
 		public override int GetHashCode() => Value.GetHashCode();
+
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			return obj is ValueOptional<T> other && other.HasValue && Value.Equals(other.Value);
+		}
 
 		public override bool Equals(Optional<T>? other)
 		{

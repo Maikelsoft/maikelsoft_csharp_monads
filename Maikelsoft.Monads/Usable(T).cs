@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads.Mutable
+namespace Maikelsoft.Monads
 {
 	public abstract class Usable<T>
 		where T : notnull

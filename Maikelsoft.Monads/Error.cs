@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Maikelsoft.Monads.Immutable
+namespace Maikelsoft.Monads
 {
     public sealed class Error : IEquatable<Error>
     {
@@ -24,12 +24,21 @@ namespace Maikelsoft.Monads.Immutable
 
         public override int GetHashCode() => _hashCode;
 
+        public override bool Equals(object? obj)
+        {
+	        if (ReferenceEquals(null, obj)) return false;
+	        if (ReferenceEquals(this, obj)) return true;
+	        return obj is Error other && 
+	               Message.Equals(other.Message) && 
+	               Nullable.Equals(Details, other.Details);
+        }
+
         public bool Equals(Error? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Message.Equals(other.Message) &&
-                Nullable.Equals(Details, other.Details);
+                   Nullable.Equals(Details, other.Details);
         }
     }
 }

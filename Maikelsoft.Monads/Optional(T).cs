@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Maikelsoft.Monads.Immutable
+namespace Maikelsoft.Monads
 {
 	public abstract class Optional<T> : IEquatable<Optional<T>>
-		where T : IEquatable<T>
+		where T : notnull
 	{
 		/// <summary>
 		/// 
@@ -38,7 +38,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <returns></returns>
 		[Pure]
 		public abstract Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> bind)
-			where TResult : IEquatable<TResult>;
+			where TResult : notnull;
 
 		/// <summary>
 		/// 
@@ -63,7 +63,7 @@ namespace Maikelsoft.Monads.Immutable
 		/// <returns></returns>
 		[Pure]
 		public Optional<TResult> Select<TResult>(Func<T, TResult> selector)
-			where TResult : IEquatable<TResult>
+			where TResult : notnull
 			=> Bind(value => Optional<TResult>.From(selector(value)));
 
 		/// <summary>
@@ -78,8 +78,8 @@ namespace Maikelsoft.Monads.Immutable
 		[Pure]
 		public Optional<TResult> SelectMany<TOther, TResult>(Func<T, Optional<TOther>> bind,
 			Func<T, TOther, TResult> selector)
-			where TOther : IEquatable<TOther>
-			where TResult : IEquatable<TResult> => 
+			where TOther : notnull
+			where TResult : notnull => 
 			Bind(value1 => bind(value1).Select(value2 => selector(value1, value2)));
 
 		/// <summary>
@@ -92,8 +92,8 @@ namespace Maikelsoft.Monads.Immutable
 		/// <returns></returns>
 		[Pure]
 		public Optional<TResult> CombineWith<TOther, TResult>(Optional<TOther> other, Func<T, TOther, TResult> resultSelector)
-			where TOther : IEquatable<TOther>
-			where TResult : IEquatable<TResult> =>
+			where TOther : notnull
+			where TResult : notnull =>
 			Bind(value1 => other.Select(value2 => resultSelector(value1, value2)));
 	}
 }

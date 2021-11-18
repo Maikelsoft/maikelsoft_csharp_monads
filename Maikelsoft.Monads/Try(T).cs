@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Maikelsoft.Monads.Mutable
+namespace Maikelsoft.Monads
 {
-	public abstract class Try<T>
+	public abstract class Try<T> : IEquatable<Try<T>>
+		where T : notnull
 	{
 		/// <summary>
 		/// 
@@ -18,12 +19,12 @@ namespace Maikelsoft.Monads.Mutable
 		/// <summary>
 		/// 
 		/// </summary>
-		public abstract bool HasException { get; }
+		public abstract bool HasError { get; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public abstract Exception? Exception { get; }
+		public abstract Error? Error { get; }
 
 		/// <summary>
 		/// Binds the wrapped value.
@@ -32,17 +33,19 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="bind"></param>
 		/// <returns></returns>
 		[Pure]
-		public abstract Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind);
+		public abstract Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind) where TResult : notnull;
 
-		public void Deconstruct(out Exception? exception, out T value)
+		public void Deconstruct(out Error? error, out T value)
 		{
-			exception = Exception;
+			error = Error;
 			value = Value;
 		}
 
-		public abstract TResult Match<TResult>(Func<Exception, TResult> whenException, Func<T, TResult> whenValue);
+		public abstract TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue);
 
-		public abstract void Match(Action<Exception> whenException, Action<T> whenValue);
+		public abstract void Match(Action<Error> whenError, Action<T> whenValue);
+
+		public abstract bool Equals(Try<T>? other);
 
 		/// <summary>
 		/// 
@@ -52,8 +55,8 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="selector"></param>
 		/// <returns></returns>
 		[Pure]
-		public Try<TResult> Select<TResult>(Func<T, TResult> selector)
-			=> Bind(value => Try.Create(() => selector(value)));
+		public Try<TResult> Select<TResult>(Func<T, TResult> selector) where TResult : notnull =>
+			Bind(value => Try.Create(() => selector(value)));
 
 		/// <summary>
 		/// 
@@ -66,7 +69,9 @@ namespace Maikelsoft.Monads.Mutable
 		/// <returns></returns>
 		[Pure]
 		public Try<TResult> SelectMany<TOther, TResult>(Func<T, Try<TOther>> trySelector,
-			Func<T, TOther, TResult> resultSelector) => 
+			Func<T, TOther, TResult> resultSelector) 
+			where TOther : notnull 
+			where TResult : notnull =>
 			Bind(value1 => trySelector(value1).Select(value2 => resultSelector(value1, value2)));
 
 		/// <summary>
@@ -78,7 +83,9 @@ namespace Maikelsoft.Monads.Mutable
 		/// <param name="resultSelector"></param>
 		/// <returns></returns>
 		[Pure]
-		public Try<TResult> CombineWith<TOther, TResult>(Try<TOther> other, Func<T, TOther, TResult> resultSelector) =>
+		public Try<TResult> CombineWith<TOther, TResult>(Try<TOther> other, Func<T, TOther, TResult> resultSelector)
+			where TOther : notnull 
+			where TResult : notnull =>
 			Bind(value1 => other.Select(value2 => resultSelector(value1, value2)));
 	}
 }

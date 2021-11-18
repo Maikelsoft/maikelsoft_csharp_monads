@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads.Immutable
+namespace Maikelsoft.Monads
 {
-
-    internal sealed class ErrorTry<T> : Try<T>
-		where T : IEquatable<T>
+	internal sealed class ErrorTry<T> : Try<T>
+		where T : notnull
 	{
 		public override T Value => throw new InvalidOperationException("No value available.");
 		public override bool HasError => true;
@@ -33,7 +32,14 @@ namespace Maikelsoft.Monads.Immutable
 
 		public override int GetHashCode()
 		{
-			return Error!.GetHashCode();
+			return Error.GetHashCode();
+		}
+
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			return obj is ErrorTry<T> other && Error.Equals(other.Error);
 		}
 
 		public override bool Equals(Try<T>? other)
