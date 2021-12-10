@@ -42,11 +42,11 @@ namespace Maikelsoft.Monads
 		public static Usable<Try<T>> Create<T>(Func<Try<T>> create)
 			where T : IDisposable
 		{
-			return new DeferredUsable<Try<T>>(create, x =>
+			return new DeferredUsable<Try<T>>(create, @try =>
 			{
-				if (x.HasValue)
+				if (@try.HasValue)
 				{
-					x.Value.Dispose();
+					@try.Value.Dispose();
 				}
 			});
 		}

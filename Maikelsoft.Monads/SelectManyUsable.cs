@@ -30,17 +30,5 @@ namespace Maikelsoft.Monads
 				});
 			});
 		}
-
-		public override TResult Use<TResult>(Func<T, TResult> func)
-		{
-			return _source.Use(outerScope =>
-			{
-				return _usableSelector(outerScope).Use(innerScope =>
-				{
-					T value = _resultSelector(outerScope, innerScope);
-					return func(value);
-				});
-			});
-		}
 	}
 }

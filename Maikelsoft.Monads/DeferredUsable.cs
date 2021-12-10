@@ -20,13 +20,5 @@ namespace Maikelsoft.Monads
 			action(instance);
 			_cleanup(instance);
 		}
-
-		public override TResult Use<TResult>(Func<T, TResult> func)
-		{
-			T instance = _create();
-			TResult result = func(instance);
-			_cleanup(instance);
-			return result;
-		}
 	}
 }

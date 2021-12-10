@@ -3,6 +3,7 @@
 namespace Maikelsoft.Monads
 {
 	internal sealed class ValueTry<T> : Try<T>
+		where T : notnull
 	{
 		public override T Value { get; }
 		public override bool HasError => false;
