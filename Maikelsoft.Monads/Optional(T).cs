@@ -3,8 +3,8 @@ using System.Diagnostics.Contracts;
 
 namespace Maikelsoft.Monads
 {
-	public abstract class Optional<T> : IEquatable<Optional<T>>
-		where T : notnull
+    public abstract class Optional<T> : IEquatable<Optional<T>>, IOptional<T> 
+        where T : notnull
 	{
 		/// <summary>
 		/// 
@@ -16,7 +16,9 @@ namespace Maikelsoft.Monads
 		/// </summary>
 		public abstract T Value { get; }
 
-		/// <summary>
+        public abstract T GetValueOrDefault(T defaultValue);
+
+        /// <summary>
 		/// 
 		/// </summary>
 		/// <param name="other"></param>

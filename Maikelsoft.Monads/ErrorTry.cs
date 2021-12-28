@@ -6,6 +6,7 @@ namespace Maikelsoft.Monads
 		where T : notnull
 	{
 		public override T Value => throw new InvalidOperationException("No value available.");
+        public override T GetValueOrDefault(T defaultValue) => defaultValue;
 		public override bool HasError => true;
 		public override bool HasValue => false;
 		public override Error Error { get; }

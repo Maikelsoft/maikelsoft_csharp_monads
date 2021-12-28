@@ -6,7 +6,9 @@ namespace Maikelsoft.Monads
 		where T : notnull
 	{
 		public override T Value { get; }
-		public override bool HasError => false;
+        public override T GetValueOrDefault(T defaultValue) => Value;
+
+        public override bool HasError => false;
 		public override bool HasValue => true;
 		public override Error? Error => null;
 

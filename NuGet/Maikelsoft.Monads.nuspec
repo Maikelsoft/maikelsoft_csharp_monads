@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Maikelsoft.Monads</id>
-    <version>1.3.1</version>
+    <version>1.3.2</version>
     <authors>Maikel de Laat</authors>
     <owners>Maikel de Laat</owners>
     <description>Provides the Optional Monad, Try Monad and the Usable Monad.</description>

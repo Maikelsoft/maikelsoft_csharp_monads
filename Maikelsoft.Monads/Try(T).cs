@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Maikelsoft.Monads
 {
-	public abstract class Try<T> : IEquatable<Try<T>>
+	public abstract class Try<T> : IEquatable<Try<T>>, IOptional<T>
 		where T : notnull
 	{
 		/// <summary>
@@ -16,7 +16,9 @@ namespace Maikelsoft.Monads
 		/// </summary>
 		public abstract T Value { get; }
 
-		/// <summary>
+        public abstract T GetValueOrDefault(T defaultValue);
+
+        /// <summary>
 		/// 
 		/// </summary>
 		public abstract bool HasError { get; }

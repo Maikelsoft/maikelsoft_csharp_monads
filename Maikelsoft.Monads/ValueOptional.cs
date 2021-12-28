@@ -22,7 +22,12 @@ namespace Maikelsoft.Monads
 			return obj is ValueOptional<T> other && other.HasValue && Value.Equals(other.Value);
 		}
 
-		public override bool Equals(Optional<T>? other)
+        public override T GetValueOrDefault(T defaultValue)
+        {
+            return Value;
+        }
+
+        public override bool Equals(Optional<T>? other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
