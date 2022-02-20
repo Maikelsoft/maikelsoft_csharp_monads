@@ -11,45 +11,63 @@ namespace Maikelsoft.Monads.Linq
     public static class ExtendIEnumerable
     {
         #region Try Monad
+        
+        [Pure]
+        public static IEnumerable<Try2<TResult>> Select<TSource, TResult>(
+            this IEnumerable<Try2<TSource>> source, Func<TSource, TResult> selector)
+            where TSource : notnull
+            where TResult : notnull
+        {
+            return source.Select(@try => @try.Select(selector));
+        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        [Pure]
+        public static IEnumerable<Try2<TResult>> Select<TSource, TResult>(
+            this IEnumerable<Try2<TSource>> source, Func<TSource, int, TResult> selector)
+            where TSource : notnull
+            where TResult : notnull
+        {
+            return source.Select((@try, i) => @try.Select(value => selector(value, i)));
+        }
+
+        [Obsolete("Use Select override")]
+        [Pure]
+        public static IEnumerable<Try2<TResult>> TrySelect<TSource, TResult>(
+            this IEnumerable<Try2<TSource>> source, Func<TSource, TResult> selector)
+            where TSource : notnull
+            where TResult : notnull
+        {
+            return source.Select(@try => @try.Select(selector));
+        }
+
+        [Obsolete("Use Select override")]
+        [Pure]
+        public static IEnumerable<Try2<TResult>> TrySelect<TSource, TResult>(
+            this IEnumerable<Try2<TSource>> source, Func<TSource, int, TResult> selector)
+            where TSource : notnull
+            where TResult : notnull
+        {
+            return source.Select((@try, i) => @try.Select(value => selector(value, i)));
+        }
+
         [Pure]
         public static IEnumerable<Try<TResult>> TrySelect<TSource, TResult>(
             this IEnumerable<Try<TSource>> source, Func<TSource, TResult> selector)
             where TSource : notnull
             where TResult : notnull
-            =>
-                source.Select(@try => @try.Bind(value => Try.Create(() => selector(value))));
+        {
+            return source.Select(@try => @try.Bind(value => Try.Create(() => selector(value))));
+        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         [Pure]
         public static IEnumerable<Try<TResult>> TrySelect<TSource, TResult>(
             this IEnumerable<Try<TSource>> source, Func<TSource, int, TResult> selector)
             where TSource : notnull
-            where TResult : notnull =>
-            source.Select((@try, i) => @try.Bind(value => Try.Create(() => selector(value, i))));
+            where TResult : notnull
+        {
+            return source.Select((@try, i) => @try.Bind(value => Try.Create(() => selector(value, i))));
+        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="whenError"></param>
-        /// <param name="whenValue"></param>
         public static void Match<T>(this IEnumerable<Try<T>> source, Action<Error> whenError, Action<T> whenValue)
             where T : notnull
         {
@@ -59,15 +77,6 @@ namespace Maikelsoft.Monads.Linq
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="whenError"></param>
-        /// <param name="whenValue"></param>
-        /// <returns></returns>
         public static IEnumerable<TResult> Match<T, TResult>(this IEnumerable<Try<T>> source, Func<Error, TResult> whenError,
             Func<T, TResult> whenValue)
             where T : notnull
@@ -75,12 +84,6 @@ namespace Maikelsoft.Monads.Linq
             return source.Select(@try => @try.Match(whenError, whenValue));
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <returns></returns>
         public static IEnumerable<T> Values<T>(this IEnumerable<Try<T>> source)
             where T : notnull
         {
@@ -91,43 +94,24 @@ namespace Maikelsoft.Monads.Linq
 
         #region Optional Monad
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         [Pure]
         public static IEnumerable<Optional<TResult>> OptionalSelect<TSource, TResult>(
             this IEnumerable<Optional<TSource>> source, Func<TSource, TResult> selector)
             where TSource : notnull
-            where TResult : notnull =>
-            source.Select(optional => optional.Bind(value => Optional.From(selector(value))));
+            where TResult : notnull
+        {
+            return source.Select(optional => optional.Bind(value => Optional.From(selector(value))));
+        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         [Pure]
         public static IEnumerable<Optional<TResult>> OptionalSelect<TSource, TResult>(
             this IEnumerable<Optional<TSource>> source, Func<TSource, int, TResult> selector)
             where TSource : notnull
-            where TResult : notnull =>
-            source.Select((optional, i) => optional.Bind(value => Optional.From(selector(value, i))));
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="whenEmpty"></param>
-        /// <param name="whenValue"></param>
+            where TResult : notnull
+        {
+            return source.Select((optional, i) => optional.Bind(value => Optional.From(selector(value, i))));
+        }
+
         public static void Match<T>(this IEnumerable<Optional<T>> source, Action whenEmpty, Action<T> whenValue)
             where T : notnull
         {
@@ -137,15 +121,6 @@ namespace Maikelsoft.Monads.Linq
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="whenEmpty"></param>
-        /// <param name="whenValue"></param>
-        /// <returns></returns>
         public static IEnumerable<TResult> Match<T, TResult>(this IEnumerable<Optional<T>> source, Func<TResult> whenEmpty,
             Func<T, TResult> whenValue)
             where T : notnull
