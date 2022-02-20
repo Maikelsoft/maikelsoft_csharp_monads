@@ -7,6 +7,8 @@ namespace Maikelsoft.Monads
     public abstract class Optional<T> : IEquatable<Optional<T>>, IOptional<T>
         where T : notnull
     {
+        public static Optional<T> Empty => EmptyOptional<T>.Instance;
+
         public abstract bool HasValue { get; }
 
         public abstract T Value { get; }
@@ -23,12 +25,7 @@ namespace Maikelsoft.Monads
 
         public abstract TResult Match<TResult>(Func<TResult> whenEmpty, Func<T, TResult> whenValue);
 
-        #region Factory methods (internal)
-        
-        internal static Optional<T> Empty => EmptyOptional<T>.Instance;
         internal static Optional<T> From(T value) => new ValueOptional<T>(value);
-
-        #endregion
 
         [Pure]
         public Optional<TResult> Select<TResult>(Func<T, TResult> selector)
