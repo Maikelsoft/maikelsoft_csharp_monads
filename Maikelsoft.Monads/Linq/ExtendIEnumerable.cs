@@ -10,7 +10,61 @@ namespace Maikelsoft.Monads.Linq
     /// </summary>
     public static class ExtendIEnumerable
     {
+        #region Either Monad
+        
+        [Pure]
+        public static IEnumerable<TLeft> LeftValues<TLeft, TRight>(this IEnumerable<Either<TLeft, TRight>> source)
+            where TLeft : notnull
+            where TRight : notnull
+        {
+            return source.Where(@try => @try.HasLeft).Select(either => either.Left);
+        }
+
+        [Pure]
+        public static IEnumerable<TRight> RightValues<TLeft, TRight>(this IEnumerable<Either<TLeft, TRight>> source)
+            where TLeft : notnull
+            where TRight : notnull
+        {
+            return source.Where(@try => @try.HasRight).Select(either => either.Right);
+        }
+
+        [Pure]
+        public static IEnumerable<Either<TResult, TRight>> SelectLeft<TLeft, TRight, TResult>(
+            this IEnumerable<Either<TLeft, TRight>> source, Func<TLeft, TResult> selector)
+            where TLeft : notnull
+            where TRight : notnull
+            where TResult : notnull
+        {
+            return source.Select(@try => @try.SelectLeft(selector));
+        }
+
+        [Pure]
+        public static IEnumerable<Either<TLeft, TResult>> SelectRight<TLeft, TRight, TResult>(
+            this IEnumerable<Either<TLeft, TRight>> source, Func<TRight, TResult> selector)
+            where TLeft : notnull
+            where TRight : notnull
+            where TResult : notnull
+        {
+            return source.Select(@try => @try.SelectRight(selector));
+        }
+
+        #endregion
+
         #region Try Monad
+
+        [Pure]
+        public static IEnumerable<T> Values<T>(this IEnumerable<Try<T>> source)
+            where T : notnull
+        {
+            return source.Where(@try => @try.HasValue).Select(@try => @try.Value);
+        }
+
+        [Pure]
+        public static IEnumerable<Error> Errors<T>(this IEnumerable<Try<T>> source)
+            where T : notnull
+        {
+            return source.Where(@try => @try.HasError).Select(@try => @try.Error);
+        }
         
         [Pure]
         public static IEnumerable<Try<TResult>> Select<TSource, TResult>(
@@ -21,15 +75,6 @@ namespace Maikelsoft.Monads.Linq
             return source.Select(@try => @try.Select(selector));
         }
 
-        [Pure]
-        public static IEnumerable<Try<TResult>> Select<TSource, TResult>(
-            this IEnumerable<Try<TSource>> source, Func<TSource, int, TResult> selector)
-            where TSource : notnull
-            where TResult : notnull
-        {
-            return source.Select((@try, i) => @try.Select(value => selector(value, i)));
-        }
-
         [Obsolete("Use Select override")]
         [Pure]
         public static IEnumerable<Try<TResult>> TrySelect<TSource, TResult>(
@@ -38,16 +83,6 @@ namespace Maikelsoft.Monads.Linq
             where TResult : notnull
         {
             return source.Select(@try => @try.Select(selector));
-        }
-
-        [Obsolete("Use Select override")]
-        [Pure]
-        public static IEnumerable<Try<TResult>> TrySelect<TSource, TResult>(
-            this IEnumerable<Try<TSource>> source, Func<TSource, int, TResult> selector)
-            where TSource : notnull
-            where TResult : notnull
-        {
-            return source.Select((@try, i) => @try.Select(value => selector(value, i)));
         }
 
         public static void Match<T>(this IEnumerable<Try<T>> source, Action<Error> whenError, Action<T> whenValue)
@@ -64,12 +99,6 @@ namespace Maikelsoft.Monads.Linq
             where T : notnull
         {
             return source.Select(@try => @try.Match(whenError, whenValue));
-        }
-
-        public static IEnumerable<T> Values<T>(this IEnumerable<Try<T>> source)
-            where T : notnull
-        {
-            return source.Where(@try => @try.HasValue).Select(@try => @try.Value);
         }
 
         #endregion
