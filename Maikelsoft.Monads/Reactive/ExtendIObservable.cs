@@ -74,14 +74,13 @@ namespace Maikelsoft.Monads.Reactive
             return source.Select(@try => @try.Select(selector));
         }
 
-        [Obsolete("Use Select override")]
         [Pure]
         public static IObservable<Try<T>> TrySelect<TSource, T>(
             this IObservable<Try<TSource>> source, Func<TSource, T> selector)
             where TSource : notnull
             where T : notnull
         {
-            return source.Select(@try => @try.Select(selector));
+            return source.Select(@try => @try.TrySelect(selector));
         }
 
         //      [Pure]

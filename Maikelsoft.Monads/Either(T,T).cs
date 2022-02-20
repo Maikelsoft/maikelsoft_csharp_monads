@@ -58,18 +58,5 @@ namespace Maikelsoft.Monads
                 return Either<TLeft, TResult>.FromRight(result);
             });
         }
-
-        //[Pure]
-        //public Either<TResult> SelectMany<TOther, TResult>(Func<TLeft, Either<TOther>> trySelector,
-        //    Func<TLeft, TOther, TResult> resultSelector) 
-        //    where TOther : notnull 
-        //    where TResult : notnull =>
-        //    Bind<TResult>(value1 => trySelector(value1).Select(value2 => resultSelector(value1, value2)));
-
-        //[Pure]
-        //public Either<TResult> CombineWith<TOther, TResult>(Either<TOther> other, Func<TLeft, TOther, TResult> resultSelector)
-        //    where TOther : notnull 
-        //    where TResult : notnull =>
-        //    Bind<TResult>(value1 => other.Select(value2 => resultSelector(value1, value2)));
     }
 }

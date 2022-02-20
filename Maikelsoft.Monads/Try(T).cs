@@ -11,7 +11,7 @@ namespace Maikelsoft.Monads
         public bool HasValue => Result.HasRight;
         public Error Error => Result.Left;
         public T Value => Result.Right;
-        
+
         internal Try(Either<Error, T> result)
         {
             Result = result;
@@ -20,14 +20,19 @@ namespace Maikelsoft.Monads
         [Pure]
         public Try<TResult> Select<TResult>(Func<T, TResult> selector) where TResult : notnull
         {
-            Either<Error, TResult> result = Result.BindRight(value => Either.FromRight<Error, TResult>(selector(value)));
-            return new Try<TResult>(result);
+            return Result.Match(Try.FromError<TResult>, value => Try.FromValue(selector(value)));
         }
 
-        public TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue) => 
+        [Pure]
+        public Try<TResult> TrySelect<TResult>(Func<T, TResult> selector) where TResult : notnull
+        {
+            return Result.Match(Try.FromError<TResult>, value => Try.Create(() => selector(value)));
+        }
+
+        public TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue) =>
             Result.Match(whenError, whenValue);
 
-        public void Match(Action<Error> whenError, Action<T> whenValue) => 
+        public void Match(Action<Error> whenError, Action<T> whenValue) =>
             Result.Match(whenError, whenValue);
 
         public T GetValueOrDefault(T defaultValue) => Result.GetRightOrDefault(defaultValue);

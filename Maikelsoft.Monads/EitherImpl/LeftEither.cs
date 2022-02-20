@@ -25,9 +25,9 @@ namespace Maikelsoft.Monads.EitherImpl
 
         public override TRight GetRightOrDefault(TRight defaultValue) => defaultValue;
 
-        public LeftEither(TLeft value)
+        public LeftEither(TLeft left)
         {
-            Left = value;
+            Left = left;
         }
 
         public override TResult Match<TResult>(Func<TLeft, TResult> whenLeft, Func<TRight, TResult> whenRight)

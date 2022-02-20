@@ -75,14 +75,13 @@ namespace Maikelsoft.Monads.Linq
             return source.Select(@try => @try.Select(selector));
         }
 
-        [Obsolete("Use Select override")]
         [Pure]
         public static IEnumerable<Try<TResult>> TrySelect<TSource, TResult>(
             this IEnumerable<Try<TSource>> source, Func<TSource, TResult> selector)
             where TSource : notnull
             where TResult : notnull
         {
-            return source.Select(@try => @try.Select(selector));
+            return source.Select(@try => @try.TrySelect(selector));
         }
 
         public static void Match<T>(this IEnumerable<Try<T>> source, Action<Error> whenError, Action<T> whenValue)
