@@ -5,15 +5,15 @@ using Maikelsoft.Monads.TryImpl;
 
 namespace Maikelsoft.Monads
 {
-	// This generic class should not reference the non-generic (static) class.
+    // This generic class should not reference the non-generic (static) class.
 	public abstract class Try<T> : IEquatable<Try<T>>, IOptional<T>
 		where T : notnull
 	{
-		public abstract bool HasValue { get; }
-		public abstract T Value { get; }
-		public abstract bool HasError { get; }
-		public abstract Error Error { get; }
-
+        public abstract bool HasError { get; }
+        public abstract bool HasValue { get; }
+        public abstract Error Error { get; }
+        public abstract T Value { get; }
+		
         #region Factory methods (internal)
 
         internal static Try<T> Create(Func<T> func)
@@ -35,7 +35,7 @@ namespace Maikelsoft.Monads
         {
             try
             {
-                var value = await func().ConfigureAwait(false);
+                T value = await func().ConfigureAwait(false);
                 return new ValueTry<T>(value);
             }
 #pragma warning disable CA1031 // Do not catch general exception types
