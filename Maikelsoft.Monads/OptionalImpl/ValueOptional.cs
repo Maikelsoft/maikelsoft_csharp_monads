@@ -19,21 +19,21 @@ namespace Maikelsoft.Monads.OptionalImpl
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			return obj is ValueOptional<T> other && other.HasValue && Value.Equals(other.Value);
+			return obj is ValueOptional<T> other && Value.Equals(other.Value);
 		}
+
+        public override bool Equals(Optional<T>? other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return other is ValueOptional<T> && Value.Equals(other.Value);
+        }
 
         public override T GetValueOrDefault(T defaultValue)
         {
             return Value;
         }
-
-        public override bool Equals(Optional<T>? other)
-		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return other.HasValue && Value.Equals(other.Value);
-		}
-
+		
 		public override void Match(Action whenEmpty, Action<T> whenValue)
 		{
 			whenValue(Value);

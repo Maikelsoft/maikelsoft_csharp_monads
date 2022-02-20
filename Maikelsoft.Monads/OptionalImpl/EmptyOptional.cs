@@ -20,18 +20,18 @@ namespace Maikelsoft.Monads.OptionalImpl
 			if (ReferenceEquals(this, obj)) return true;
 			return obj is EmptyOptional<T>;
 		}
-
-        public override T GetValueOrDefault(T defaultValue)
-        {
-            return defaultValue;
-        }
-
+		
         public override bool Equals(Optional<T>? other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
 			return other is EmptyOptional<T>;
 		}
+		
+        public override T GetValueOrDefault(T defaultValue)
+        {
+            return defaultValue;
+        }
 
 		public override void Match(Action whenEmpty, Action<T> whenValue)
 		{

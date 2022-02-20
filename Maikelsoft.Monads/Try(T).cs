@@ -64,10 +64,10 @@ namespace Maikelsoft.Monads
 
         #region Abstract methods
 
-        public abstract T GetValueOrDefault(T defaultValue);
-
         [Pure]
         public abstract Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind) where TResult : notnull;
+
+        public abstract T GetValueOrDefault(T defaultValue);
 		
         public abstract TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue);
 
