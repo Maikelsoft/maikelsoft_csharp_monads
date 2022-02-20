@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Diagnostics.Contracts;
 
 namespace Maikelsoft.Monads
 {
-    public sealed class Try2<T>
+    public sealed class Try2<T> : IEquatable<Try2<T>>, IOptional<T>
         where T : notnull
     {
         public Either<Error, T> Result { get; }
@@ -12,78 +12,45 @@ namespace Maikelsoft.Monads
         public Error Error => Result.Left;
         public T Value => Result.Right;
         
-        private Try2(Either<Error, T> result)
+        internal Try2(Either<Error, T> result)
         {
             Result = result;
         }
 
-        #region Factory methods
-
-        internal static Try2<T> Create(Func<T> func)
+        [Pure]
+        public Try2<TResult> Select<TResult>(Func<T, TResult> selector) where TResult : notnull
         {
-            Either<Error, T> result = GetResult(func);
-            return new Try2<T>(result);
+            Either<Error, TResult> result = Result.BindRight(value => Either.FromRight<Error, TResult>(selector(value)));
+            return new Try2<TResult>(result);
         }
 
-        internal static async Task<Try2<T>> Create(Func<Task<T>> func)
+        public TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue) => 
+            Result.Match(whenError, whenValue);
+
+        public void Match(Action<Error> whenError, Action<T> whenValue) => 
+            Result.Match(whenError, whenValue);
+
+        public T GetValueOrDefault(T defaultValue) => Result.GetRightOrDefault(defaultValue);
+
+        #region Equality members
+
+        public bool Equals(Try2<T>? other)
         {
-            Either<Error, T> result = await GetResult(func);
-            return new Try2<T>(result);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Result.Equals(other.Result);
         }
 
-        internal static Try2<T> FromError(Error error)
+        public override bool Equals(object? obj)
         {
-            Either<Error, T> result = Either<Error, T>.FromLeft(error);
-            return new Try2<T>(result);
+            return ReferenceEquals(this, obj) || obj is Try2<T> other && Equals(other);
         }
 
-        internal static Try2<T> FromValue(T value)
+        public override int GetHashCode()
         {
-            Either<Error, T> result = Either<Error, T>.FromRight(value);
-            return new Try2<T>(result);
-        }
-
-        internal static Try2<T> FromException(Exception exception) => 
-            FromError(Error.FromException(exception));
-        
-        internal static Try2<T> FromError(string errorMessage, string? details = null)
-        {
-            Error error = new Error(errorMessage, details);
-            return FromError(error);
+            return Result.GetHashCode();
         }
 
         #endregion
-        
-        private static Either<Error, T> GetResult(Func<T> func)
-        {
-            try
-            {
-                T value = func();
-                return Either<Error, T>.FromRight(value);
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception exception)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                Error error = Error.FromException(exception);
-                return Either<Error, T>.FromLeft(error);
-            }
-        }
-
-        private static async Task<Either<Error, T>> GetResult(Func<Task<T>> func)
-        {
-            try
-            {
-                T value = await func().ConfigureAwait(false);
-                return Either<Error, T>.FromRight(value);
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception exception)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                Error error = Error.FromException(exception);
-                return Either<Error, T>.FromLeft(error);
-            }
-        }
     }
 }
