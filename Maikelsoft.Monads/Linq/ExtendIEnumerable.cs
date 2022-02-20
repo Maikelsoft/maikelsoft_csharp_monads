@@ -13,8 +13,8 @@ namespace Maikelsoft.Monads.Linq
         #region Try Monad
         
         [Pure]
-        public static IEnumerable<Try2<TResult>> Select<TSource, TResult>(
-            this IEnumerable<Try2<TSource>> source, Func<TSource, TResult> selector)
+        public static IEnumerable<Try<TResult>> Select<TSource, TResult>(
+            this IEnumerable<Try<TSource>> source, Func<TSource, TResult> selector)
             where TSource : notnull
             where TResult : notnull
         {
@@ -22,8 +22,8 @@ namespace Maikelsoft.Monads.Linq
         }
 
         [Pure]
-        public static IEnumerable<Try2<TResult>> Select<TSource, TResult>(
-            this IEnumerable<Try2<TSource>> source, Func<TSource, int, TResult> selector)
+        public static IEnumerable<Try<TResult>> Select<TSource, TResult>(
+            this IEnumerable<Try<TSource>> source, Func<TSource, int, TResult> selector)
             where TSource : notnull
             where TResult : notnull
         {
@@ -31,41 +31,23 @@ namespace Maikelsoft.Monads.Linq
         }
 
         [Obsolete("Use Select override")]
-        [Pure]
-        public static IEnumerable<Try2<TResult>> TrySelect<TSource, TResult>(
-            this IEnumerable<Try2<TSource>> source, Func<TSource, TResult> selector)
-            where TSource : notnull
-            where TResult : notnull
-        {
-            return source.Select(@try => @try.Select(selector));
-        }
-
-        [Obsolete("Use Select override")]
-        [Pure]
-        public static IEnumerable<Try2<TResult>> TrySelect<TSource, TResult>(
-            this IEnumerable<Try2<TSource>> source, Func<TSource, int, TResult> selector)
-            where TSource : notnull
-            where TResult : notnull
-        {
-            return source.Select((@try, i) => @try.Select(value => selector(value, i)));
-        }
-
         [Pure]
         public static IEnumerable<Try<TResult>> TrySelect<TSource, TResult>(
             this IEnumerable<Try<TSource>> source, Func<TSource, TResult> selector)
             where TSource : notnull
             where TResult : notnull
         {
-            return source.Select(@try => @try.Bind(value => Try.Create(() => selector(value))));
+            return source.Select(@try => @try.Select(selector));
         }
 
+        [Obsolete("Use Select override")]
         [Pure]
         public static IEnumerable<Try<TResult>> TrySelect<TSource, TResult>(
             this IEnumerable<Try<TSource>> source, Func<TSource, int, TResult> selector)
             where TSource : notnull
             where TResult : notnull
         {
-            return source.Select((@try, i) => @try.Bind(value => Try.Create(() => selector(value, i))));
+            return source.Select((@try, i) => @try.Select(value => selector(value, i)));
         }
 
         public static void Match<T>(this IEnumerable<Try<T>> source, Action<Error> whenError, Action<T> whenValue)
