@@ -4,7 +4,11 @@ namespace Maikelsoft.Monads.OptionalImpl
 {
 	internal sealed class EmptyOptional<T> : Optional<T>
 		where T : notnull
-	{
+    {
+        private static EmptyOptional<T>? _instance;
+
+        public static EmptyOptional<T> Instance => _instance ??= new EmptyOptional<T>();
+
 		public override T Value => throw new InvalidOperationException();
 		public override bool HasValue => false;
 
@@ -36,7 +40,7 @@ namespace Maikelsoft.Monads.OptionalImpl
 
 		public override Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> bind)
 		{
-			return Optional<TResult>.Empty;
+			return EmptyOptional<TResult>.Instance;
 		}
 
 		public override TResult Match<TResult>(Func<TResult> whenEmpty, Func<T, TResult> whenValue)
