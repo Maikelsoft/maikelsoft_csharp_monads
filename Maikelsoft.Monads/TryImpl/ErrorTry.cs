@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.TryImpl
 {
 	internal sealed class ErrorTry<T> : Try<T>
 		where T : notnull
 	{
-		public override T Value => throw new InvalidOperationException("No value available.");
+		public override T Value => throw new InvalidOperationException();
         public override T GetValueOrDefault(T defaultValue) => defaultValue;
 		public override bool HasError => true;
 		public override bool HasValue => false;

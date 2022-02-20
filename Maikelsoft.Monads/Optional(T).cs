@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using Maikelsoft.Monads.OptionalImpl;
 
 namespace Maikelsoft.Monads
 {
@@ -26,6 +27,16 @@ namespace Maikelsoft.Monads
 		public abstract bool Equals(Optional<T>? other);
 
 		/// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="bind"></param>
+        /// <returns></returns>
+        [Pure]
+        public abstract Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> bind)
+            where TResult : notnull;
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="whenEmpty"></param>
@@ -36,21 +47,12 @@ namespace Maikelsoft.Monads
 		/// 
 		/// </summary>
 		/// <typeparam name="TResult"></typeparam>
-		/// <param name="bind"></param>
-		/// <returns></returns>
-		[Pure]
-		public abstract Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> bind)
-			where TResult : notnull;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="TResult"></typeparam>
 		/// <param name="whenEmpty"></param>
 		/// <param name="whenValue"></param>
 		/// <returns></returns>
 		public abstract TResult Match<TResult>(Func<TResult> whenEmpty, Func<T, TResult> whenValue);
 
+		[Pure]
 		public static Optional<T> Empty => new EmptyOptional<T>();
 
 		[Pure]

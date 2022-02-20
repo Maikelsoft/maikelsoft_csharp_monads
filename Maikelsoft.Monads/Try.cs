@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 
 namespace Maikelsoft.Monads
 {
-	/// <summary>
-	/// 
-	/// </summary>
+	// This class should not reference the implementation classes.
 	public static class Try
 	{
 		/// <summary>
@@ -16,52 +14,25 @@ namespace Maikelsoft.Monads
 		/// <param name="func"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> Create<T>(Func<T> func)
-			where T : notnull
-		{
-			try
-			{
-				T value = func();
-				return new ValueTry<T>(value);
-			}
-#pragma warning disable CA1031 // Do not catch general exception types
-			catch (Exception exception)
-#pragma warning restore CA1031 // Do not catch general exception types
-			{
-				return FromException<T>(exception);
-			}
-		}
+		public static Try<T> Create<T>(Func<T> func) where T : notnull => Try<T>.Create(func);
 
-		/// <summary>
+        /// <summary>
 		/// 
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="func"></param>
 		/// <returns></returns>
 		[Pure]
-		public static async Task<Try<T>> Create<T>(Func<Task<T>> func)
-			where T : notnull
-		{
-			try
-			{
-				return FromValue(await func().ConfigureAwait(false));
-			}
-#pragma warning disable CA1031 // Do not catch general exception types
-			catch (Exception exception)
-#pragma warning restore CA1031 // Do not catch general exception types
-			{
-				return FromException<T>(exception);
-			}
-		}
+		public static Task<Try<T>> Create<T>(Func<Task<T>> func) where T : notnull => Try<T>.Create(func);
 
-		/// <summary>
+        /// <summary>
 		/// 
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromValue<T>(T value) where T : notnull => new ValueTry<T>(value);
+		public static Try<T> FromValue<T>(T value) where T : notnull => Try<T>.FromValue(value);
 
 		/// <summary>
 		/// 
@@ -70,8 +41,7 @@ namespace Maikelsoft.Monads
 		/// <param name="exception"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromException<T>(Exception exception) where T : notnull =>
-			new ErrorTry<T>(Error.FromException(exception));
+		public static Try<T> FromException<T>(Exception exception) where T : notnull => Try<T>.FromException(exception);
 
 		/// <summary>
 		/// 
@@ -82,7 +52,7 @@ namespace Maikelsoft.Monads
 		/// <returns></returns>
 		[Pure]
 		public static Try<T> FromError<T>(string errorMessage, string? details = null) where T : notnull
-			=> new ErrorTry<T>(new Error(errorMessage, details));
+			=> Try<T>.FromError(errorMessage, details);
 
 		/// <summary>
 		/// 
@@ -91,6 +61,6 @@ namespace Maikelsoft.Monads
 		/// <param name="error"></param>
 		/// <returns></returns>
 		[Pure]
-		public static Try<T> FromError<T>(Error error) where T : notnull => new ErrorTry<T>(error);
+		public static Try<T> FromError<T>(Error error) where T : notnull => Try<T>.FromError(error);
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.UsableImpl
 {
 	internal sealed class DeferredUsable<T> : Usable<T>
 		where T : notnull

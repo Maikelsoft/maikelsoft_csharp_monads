@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.OptionalImpl
 {
 	internal sealed class EmptyOptional<T> : Optional<T>
 		where T : notnull
 	{
-		public override T Value => throw new InvalidOperationException("Cannot get value.");
+		public override T Value => throw new InvalidOperationException();
 		public override bool HasValue => false;
 
 		public override int GetHashCode() => typeof(T).GetHashCode();

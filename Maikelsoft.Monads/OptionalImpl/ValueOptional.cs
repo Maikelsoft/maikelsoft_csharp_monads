@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.OptionalImpl
 {
 	internal sealed class ValueOptional<T> : Optional<T>
 		where T : notnull

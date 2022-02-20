@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Maikelsoft.Monads
+namespace Maikelsoft.Monads.UsableImpl
 {
 	internal sealed class BackgroundUsable<T> : Usable<T>
 		where T : notnull
