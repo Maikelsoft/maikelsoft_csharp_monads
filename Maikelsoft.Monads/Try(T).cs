@@ -18,13 +18,13 @@ namespace Maikelsoft.Monads
         }
 
         [Pure]
-        public Try<TResult> Select<TResult>(Func<T, TResult> selector) where TResult : notnull
+        public Try<TResult> Map<TResult>(Func<T, TResult> selector) where TResult : notnull
         {
             return Result.Match(Try.FromError<TResult>, value => Try.FromValue(selector(value)));
         }
 
         [Pure]
-        public Try<TResult> TrySelect<TResult>(Func<T, TResult> selector) where TResult : notnull
+        public Try<TResult> TryMap<TResult>(Func<T, TResult> selector) where TResult : notnull
         {
             return Result.Match(Try.FromError<TResult>, value => Try.Create(() => selector(value)));
         }

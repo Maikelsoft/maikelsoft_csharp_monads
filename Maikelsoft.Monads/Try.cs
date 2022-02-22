@@ -16,7 +16,7 @@ namespace Maikelsoft.Monads
         [Pure]
         public static Try<T> FromError<T>(string errorMessage, string? details = null) where T : notnull
         {
-            Error error = new Error(errorMessage, details);
+            Error error = new Error(errorMessage, details, null);
             return FromError<T>(error);
         }
 

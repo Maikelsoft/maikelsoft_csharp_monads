@@ -34,13 +34,13 @@ namespace Maikelsoft.Monads
 		}
 
 		[Pure]
-		public static Usable<T> Select<TOuter, T>(this Usable<TOuter> source, Func<TOuter, T> resultSelector)
+		public static Usable<T> Map<TOuter, T>(this Usable<TOuter> source, Func<TOuter, T> resultSelector)
 			where TOuter : notnull
 			where T : notnull =>
 			new SelectUsable<TOuter, T>(source, resultSelector);
 
 		[Pure]
-		public static Usable<T> SelectMany<TOuter, TInner, T>(this Usable<TOuter> source, 
+		public static Usable<T> MapMany<TOuter, TInner, T>(this Usable<TOuter> source, 
 			Func<TOuter, Usable<TInner>> usableSelector,
 			Func<TOuter, TInner, T> resultSelector)
 			where TOuter : notnull

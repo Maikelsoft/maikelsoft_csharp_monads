@@ -28,22 +28,8 @@ namespace Maikelsoft.Monads
         internal static Optional<T> From(T value) => new ValueOptional<T>(value);
 
         [Pure]
-        public Optional<TResult> Select<TResult>(Func<T, TResult> selector)
+        public Optional<TResult> Map<TResult>(Func<T, TResult> selector)
             where TResult : notnull
             => Bind(value => Optional<TResult>.From(selector(value)));
-
-        [Pure]
-        public Optional<TResult> SelectMany<TOther, TResult>(Func<T, Optional<TOther>> bind,
-            Func<T, TOther, TResult> selector)
-            where TOther : notnull
-            where TResult : notnull =>
-            Bind(value1 => bind(value1).Select(value2 => selector(value1, value2)));
-
-        [Pure]
-        public Optional<TResult> CombineWith<TOther, TResult>(Optional<TOther> other,
-            Func<T, TOther, TResult> resultSelector)
-            where TOther : notnull
-            where TResult : notnull =>
-            Bind(value1 => other.Select(value2 => resultSelector(value1, value2)));
     }
 }

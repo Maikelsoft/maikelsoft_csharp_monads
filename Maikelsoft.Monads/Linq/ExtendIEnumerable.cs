@@ -13,39 +13,39 @@ namespace Maikelsoft.Monads.Linq
         #region Either Monad
         
         [Pure]
-        public static IEnumerable<TLeft> LeftValues<TLeft, TRight>(this IEnumerable<Either<TLeft, TRight>> source)
+        public static IEnumerable<TLeft> Lefts<TLeft, TRight>(this IEnumerable<Either<TLeft, TRight>> source)
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(@try => @try.HasLeft).Select(either => either.Left);
+            return source.Where(either => either.HasLeft).Select(either => either.Left);
         }
 
         [Pure]
-        public static IEnumerable<TRight> RightValues<TLeft, TRight>(this IEnumerable<Either<TLeft, TRight>> source)
+        public static IEnumerable<TRight> Rights<TLeft, TRight>(this IEnumerable<Either<TLeft, TRight>> source)
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(@try => @try.HasRight).Select(either => either.Right);
+            return source.Where(either => either.HasRight).Select(either => either.Right);
         }
 
         [Pure]
-        public static IEnumerable<Either<TResult, TRight>> SelectLeft<TLeft, TRight, TResult>(
+        public static IEnumerable<Either<TResult, TRight>> MapLefts<TLeft, TRight, TResult>(
             this IEnumerable<Either<TLeft, TRight>> source, Func<TLeft, TResult> selector)
             where TLeft : notnull
             where TRight : notnull
             where TResult : notnull
         {
-            return source.Select(@try => @try.SelectLeft(selector));
+            return source.Select(either => either.MapLeft(selector));
         }
 
         [Pure]
-        public static IEnumerable<Either<TLeft, TResult>> SelectRight<TLeft, TRight, TResult>(
+        public static IEnumerable<Either<TLeft, TResult>> MapRights<TLeft, TRight, TResult>(
             this IEnumerable<Either<TLeft, TRight>> source, Func<TRight, TResult> selector)
             where TLeft : notnull
             where TRight : notnull
             where TResult : notnull
         {
-            return source.Select(@try => @try.SelectRight(selector));
+            return source.Select(either => either.MapRight(selector));
         }
 
         #endregion
@@ -67,21 +67,29 @@ namespace Maikelsoft.Monads.Linq
         }
         
         [Pure]
-        public static IEnumerable<Try<TResult>> Select<TSource, TResult>(
+        public static IEnumerable<Try<TResult>> MapValues<TSource, TResult>(
             this IEnumerable<Try<TSource>> source, Func<TSource, TResult> selector)
             where TSource : notnull
             where TResult : notnull
         {
-            return source.Select(@try => @try.Select(selector));
+            return source.Select(@try => @try.Map(selector));
         }
 
         [Pure]
-        public static IEnumerable<Try<TResult>> TrySelect<TSource, TResult>(
+        public static IEnumerable<Try<TResult>> TryMapValues<TSource, TResult>(
             this IEnumerable<Try<TSource>> source, Func<TSource, TResult> selector)
             where TSource : notnull
             where TResult : notnull
         {
-            return source.Select(@try => @try.TrySelect(selector));
+            return source.Select(@try => @try.TryMap(selector));
+        }
+
+        [Pure]
+        public static IEnumerable<TResult> Match<T, TResult>(this IEnumerable<Try<T>> source, Func<Error, TResult> whenError,
+            Func<T, TResult> whenValue)
+            where T : notnull
+        {
+            return source.Select(@try => @try.Match(whenError, whenValue));
         }
 
         public static void Match<T>(this IEnumerable<Try<T>> source, Action<Error> whenError, Action<T> whenValue)
@@ -93,19 +101,12 @@ namespace Maikelsoft.Monads.Linq
             }
         }
 
-        public static IEnumerable<TResult> Match<T, TResult>(this IEnumerable<Try<T>> source, Func<Error, TResult> whenError,
-            Func<T, TResult> whenValue)
-            where T : notnull
-        {
-            return source.Select(@try => @try.Match(whenError, whenValue));
-        }
-
         #endregion
 
         #region Optional Monad
 
         [Pure]
-        public static IEnumerable<Optional<TResult>> OptionalSelect<TSource, TResult>(
+        public static IEnumerable<Optional<TResult>> MapValues<TSource, TResult>(
             this IEnumerable<Optional<TSource>> source, Func<TSource, TResult> selector)
             where TSource : notnull
             where TResult : notnull
@@ -113,13 +114,11 @@ namespace Maikelsoft.Monads.Linq
             return source.Select(optional => optional.Bind(value => Optional.From(selector(value))));
         }
 
-        [Pure]
-        public static IEnumerable<Optional<TResult>> OptionalSelect<TSource, TResult>(
-            this IEnumerable<Optional<TSource>> source, Func<TSource, int, TResult> selector)
-            where TSource : notnull
-            where TResult : notnull
+        public static IEnumerable<TResult> Match<T, TResult>(this IEnumerable<Optional<T>> source, Func<TResult> whenEmpty,
+            Func<T, TResult> whenValue)
+            where T : notnull
         {
-            return source.Select((optional, i) => optional.Bind(value => Optional.From(selector(value, i))));
+            return source.Select(optional => optional.Match(whenEmpty, whenValue));
         }
 
         public static void Match<T>(this IEnumerable<Optional<T>> source, Action whenEmpty, Action<T> whenValue)
@@ -129,13 +128,6 @@ namespace Maikelsoft.Monads.Linq
             {
                 optional.Match(whenEmpty, whenValue);
             }
-        }
-
-        public static IEnumerable<TResult> Match<T, TResult>(this IEnumerable<Optional<T>> source, Func<TResult> whenEmpty,
-            Func<T, TResult> whenValue)
-            where T : notnull
-        {
-            return source.Select(optional => optional.Match(whenEmpty, whenValue));
         }
 
         #endregion

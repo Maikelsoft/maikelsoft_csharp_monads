@@ -40,7 +40,7 @@ namespace Maikelsoft.Monads
         #endregion
 
         [Pure]
-        public Either<TResult, TRight> SelectLeft<TResult>(Func<TLeft, TResult> selector) where TResult : notnull
+        public Either<TResult, TRight> MapLeft<TResult>(Func<TLeft, TResult> selector) where TResult : notnull
         {
             return BindLeft(value =>
             {
@@ -50,7 +50,7 @@ namespace Maikelsoft.Monads
         }
 
         [Pure]
-        public Either<TLeft, TResult> SelectRight<TResult>(Func<TRight, TResult> selector) where TResult : notnull
+        public Either<TLeft, TResult> MapRight<TResult>(Func<TRight, TResult> selector) where TResult : notnull
         {
             return BindRight(value =>
             {

@@ -10,45 +10,45 @@ namespace Maikelsoft.Monads.Reactive
     public static class ExtendIObservable
     {
         #region Either Monad
-        
+
         [Pure]
-        public static IObservable<TLeft> LeftValues<TLeft, TRight>(this IObservable<Either<TLeft, TRight>> source)
+        public static IObservable<TLeft> Lefts<TLeft, TRight>(this IObservable<Either<TLeft, TRight>> source)
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(@try => @try.HasLeft).Select(either => either.Left);
+            return source.Where(either => either.HasLeft).Select(either => either.Left);
         }
 
         [Pure]
-        public static IObservable<TRight> RightValues<TLeft, TRight>(this IObservable<Either<TLeft, TRight>> source)
+        public static IObservable<TRight> Rights<TLeft, TRight>(this IObservable<Either<TLeft, TRight>> source)
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(@try => @try.HasRight).Select(either => either.Right);
+            return source.Where(either => either.HasRight).Select(either => either.Right);
         }
 
         [Pure]
-        public static IObservable<Either<TResult, TRight>> SelectLeft<TLeft, TRight, TResult>(
+        public static IObservable<Either<TResult, TRight>> MapLefts<TLeft, TRight, TResult>(
             this IObservable<Either<TLeft, TRight>> source, Func<TLeft, TResult> selector)
             where TLeft : notnull
             where TRight : notnull
             where TResult : notnull
         {
-            return source.Select(@try => @try.SelectLeft(selector));
+            return source.Select(either => either.MapLeft(selector));
         }
 
         [Pure]
-        public static IObservable<Either<TLeft, TResult>> SelectRight<TLeft, TRight, TResult>(
+        public static IObservable<Either<TLeft, TResult>> MapRights<TLeft, TRight, TResult>(
             this IObservable<Either<TLeft, TRight>> source, Func<TRight, TResult> selector)
             where TLeft : notnull
             where TRight : notnull
             where TResult : notnull
         {
-            return source.Select(@try => @try.SelectRight(selector));
+            return source.Select(either => either.MapRight(selector));
         }
 
         #endregion
-        
+
         #region Try Monad
 
         [Pure]
@@ -66,111 +66,50 @@ namespace Maikelsoft.Monads.Reactive
         }
 
         [Pure]
-        public static IObservable<Try<T>> Select<TSource, T>(
+        public static IObservable<Try<T>> MapValues<TSource, T>(
             this IObservable<Try<TSource>> source, Func<TSource, T> selector)
             where TSource : notnull
             where T : notnull
         {
-            return source.Select(@try => @try.Select(selector));
+            return source.Select(@try => @try.Map(selector));
         }
 
         [Pure]
-        public static IObservable<Try<T>> TrySelect<TSource, T>(
+        public static IObservable<Try<T>> TryMapValues<TSource, T>(
             this IObservable<Try<TSource>> source, Func<TSource, T> selector)
             where TSource : notnull
             where T : notnull
         {
-            return source.Select(@try => @try.TrySelect(selector));
+            return source.Select(@try => @try.TryMap(selector));
         }
 
-        //      [Pure]
-        //public static IObservable<Try<TResult>> TryCombineLatest<TSource1, TSource2, TResult>(
-        //	this IObservable<Try<TSource1>> source1,
-        //	IObservable<Try<TSource2>> source2, Func<TSource1, TSource2, TResult> resultSelector)
-        //	where TSource1 : notnull
-        //	where TSource2 : notnull
-        //	where TResult : notnull
-        //      {
-        //          return source1.CombineLatest(source2, (try1, try2) => try1.CombineWith(try2, resultSelector));
-        //      }
-
-        //      [Pure]
-        //public static IObservable<Try<TResult>> TryWithLatestFrom<TSource1, TSource2, TResult>(
-        //	this IObservable<Try<TSource1>> source1,
-        //	IObservable<Try<TSource2>> source2, Func<TSource1, TSource2, TResult> resultSelector)
-        //	where TSource1 : notnull
-        //	where TSource2 : notnull
-        //	where TResult : notnull
-        //      {
-        //          return source1.WithLatestFrom(source2, (try1, try2) => try1.CombineWith(try2, resultSelector));
-        //      }
-
-        //      [Pure]
-        //public static IObservable<Try<TResult>> TryZip<TSource1, TSource2, TResult>(
-        //	this IObservable<Try<TSource1>> source1,
-        //	IObservable<Try<TSource2>> source2, Func<TSource1, TSource2, TResult> resultSelector)
-        //	where TSource1 : notnull
-        //	where TSource2 : notnull
-        //	where TResult : notnull
-        //      {
-        //          return source1.Zip(source2, (try1, try2) => try1.CombineWith(try2, resultSelector));
-        //      }
+        [Pure]
+        public static IObservable<TResult> Match<T, TResult>(this IObservable<Try<T>> source,
+            Func<Error, TResult> whenError, Func<T, TResult> whenValue)
+            where T : notnull
+        {
+            return source.Select(@try => @try.Match(whenError, whenValue));
+        }
 
         #endregion
 
         #region Optional Monad
 
         [Pure]
-        public static IObservable<Optional<T>> OptionalSelect<TSource, T>(
+        public static IObservable<Optional<T>> MapValues<TSource, T>(
             this IObservable<Optional<TSource>> source, Func<TSource, T> selector)
             where TSource : notnull
             where T : notnull
         {
-            return source.Select(optional => optional.Select(selector));
+            return source.Select(optional => optional.Map(selector));
         }
 
-        [Pure]
-        public static IObservable<Optional<TResult>> OptionalSelect<TSource, TResult>(
-            this IObservable<Optional<TSource>> source, Func<TSource, int, TResult> selector)
-            where TSource : notnull
-            where TResult : notnull
+        public static IObservable<TResult> Match<T, TResult>(this IObservable<Optional<T>> source,
+            Func<TResult> whenEmpty,
+            Func<T, TResult> whenValue)
+            where T : notnull
         {
-            return source.Select((optional, i) => optional.Select(value => selector(value, i)));
-        }
-
-        [Pure]
-        public static IObservable<Optional<TResult>> OptionalCombineLatest<TSource1, TSource2, TResult>(
-            this IObservable<Optional<TSource1>> source1,
-            IObservable<Optional<TSource2>> source2, Func<TSource1, TSource2, TResult> resultSelector)
-            where TSource1 : notnull
-            where TSource2 : notnull
-            where TResult : notnull
-        {
-            return source1.CombineLatest(source2,
-                (optional1, optional2) => optional1.CombineWith(optional2, resultSelector));
-        }
-
-        [Pure]
-        public static IObservable<Optional<TResult>> OptionalWithLatestFrom<TSource1, TSource2, TResult>(
-            this IObservable<Optional<TSource1>> source1,
-            IObservable<Optional<TSource2>> source2, Func<TSource1, TSource2, TResult> resultSelector)
-            where TSource1 : notnull
-            where TSource2 : notnull
-            where TResult : notnull
-        {
-            return source1.WithLatestFrom(source2,
-                (optional1, optional2) => optional1.CombineWith(optional2, resultSelector));
-        }
-
-        [Pure]
-        public static IObservable<Optional<TResult>> OptionalZip<TSource1, TSource2, TResult>(
-            this IObservable<Optional<TSource1>> source1,
-            IObservable<Optional<TSource2>> source2, Func<TSource1, TSource2, TResult> resultSelector)
-            where TSource1 : notnull
-            where TSource2 : notnull
-            where TResult : notnull
-        {
-            return source1.Zip(source2, (optional1, optional2) => optional1.CombineWith(optional2, resultSelector));
+            return source.Select(optional => optional.Match(whenEmpty, whenValue));
         }
 
         #endregion
