@@ -28,8 +28,8 @@ namespace Maikelsoft.Monads
 			{
 				if (@try.HasValue)
 				{
-					@try.Value.Dispose();
-				}
+					@try.DiposeValue();
+                }
 			});
 		}
 

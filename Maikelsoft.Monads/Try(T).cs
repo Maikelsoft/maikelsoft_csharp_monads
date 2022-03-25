@@ -9,7 +9,11 @@ namespace Maikelsoft.Monads
         public Either<Error, T> Result { get; }
         public bool HasError => Result.HasLeft;
         public bool HasValue => Result.HasRight;
+
+        [Obsolete("This property will throw an exception if it has no value. Use Match() instead.")]
         public Error Error => Result.Left;
+
+        [Obsolete("This property will throw an exception if it has no value. Use Match() instead.")]
         public T Value => Result.Right;
 
         internal Try(Either<Error, T> result)

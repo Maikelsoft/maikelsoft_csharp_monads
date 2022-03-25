@@ -10,7 +10,11 @@ namespace Maikelsoft.Monads
     {
         public abstract bool HasLeft { get; }
         public abstract bool HasRight { get; }
+        
+        [Obsolete("This property will throw an exception if it has no value. Use Match() instead.")]
         public abstract TLeft Left { get; }
+        
+        [Obsolete("This property will throw an exception if it has no value. Use Match() instead.")]
         public abstract TRight Right { get; }
 
         #region Factory methods (internal)
