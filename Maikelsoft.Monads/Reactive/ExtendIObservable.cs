@@ -66,16 +66,16 @@ namespace Maikelsoft.Monads.Reactive
         }
 
         [Pure]
-        public static IObservable<Try<T>> MapValues<TSource, T>(
-            this IObservable<Try<TSource>> source, Func<TSource, T> selector)
+        public static IObservable<Try<T>> TryMap<TSource, T>(
+            this IObservable<TSource> source, Func<TSource, T> selector)
             where TSource : notnull
             where T : notnull
         {
-            return source.Select(@try => @try.Map(selector));
+            return source.Select(value => Try.Create(() => selector(value)));
         }
 
         [Pure]
-        public static IObservable<Try<T>> TryMapValues<TSource, T>(
+        public static IObservable<Try<T>> TryMap<TSource, T>(
             this IObservable<Try<TSource>> source, Func<TSource, T> selector)
             where TSource : notnull
             where T : notnull

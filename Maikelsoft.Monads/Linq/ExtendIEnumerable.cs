@@ -65,25 +65,25 @@ namespace Maikelsoft.Monads.Linq
         {
             return source.Where(@try => @try.HasError).Select(@try => @try.Error);
         }
-        
+
         [Pure]
-        public static IEnumerable<Try<TResult>> MapValues<TSource, TResult>(
-            this IEnumerable<Try<TSource>> source, Func<TSource, TResult> selector)
+        public static IEnumerable<Try<T>> TryMap<TSource, T>(
+            this IEnumerable<TSource> source, Func<TSource, T> selector)
             where TSource : notnull
-            where TResult : notnull
+            where T : notnull
         {
-            return source.Select(@try => @try.Map(selector));
+            return source.Select(value => Try.Create(() => selector(value)));
         }
 
         [Pure]
-        public static IEnumerable<Try<TResult>> TryMapValues<TSource, TResult>(
-            this IEnumerable<Try<TSource>> source, Func<TSource, TResult> selector)
+        public static IEnumerable<Try<T>> TryMap<TSource, T>(
+            this IEnumerable<Try<TSource>> source, Func<TSource, T> selector)
             where TSource : notnull
-            where TResult : notnull
+            where T : notnull
         {
             return source.Select(@try => @try.TryMap(selector));
         }
-
+        
         [Pure]
         public static IEnumerable<TResult> Match<T, TResult>(this IEnumerable<Try<T>> source, Func<Error, TResult> whenError,
             Func<T, TResult> whenValue)
