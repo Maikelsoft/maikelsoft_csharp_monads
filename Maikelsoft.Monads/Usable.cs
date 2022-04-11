@@ -21,19 +21,6 @@ namespace Maikelsoft.Monads
 		}
 
 		[Pure]
-		public static Usable<Try<T>> Create<T>(Func<Try<T>> create)
-			where T : IDisposable
-		{
-			return new DeferredUsable<Try<T>>(create, @try =>
-			{
-				if (@try.HasValue)
-				{
-					@try.DiposeValue();
-                }
-			});
-		}
-
-		[Pure]
 		public static Usable<T> Map<TOuter, T>(this Usable<TOuter> source, Func<TOuter, T> resultSelector)
 			where TOuter : notnull
 			where T : notnull =>

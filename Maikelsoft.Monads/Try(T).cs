@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Maikelsoft.Monads
 {
-    public sealed class Try<T> : IEquatable<Try<T>>, IOptional<T>
+    public sealed class Try<T> : IEquatable<Try<T>>
         where T : notnull
     {
         public Either<Error, T> Result { get; }

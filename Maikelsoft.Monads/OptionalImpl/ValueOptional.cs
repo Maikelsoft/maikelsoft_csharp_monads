@@ -5,48 +5,56 @@ namespace Maikelsoft.Monads.OptionalImpl
 	internal sealed class ValueOptional<T> : Optional<T>
 		where T : notnull
 	{
-		public override T Value { get; }
-		public override bool HasValue => true;
+        private readonly T _value;
+
+        public override T Value => _value;
+
+        public override bool HasValue => true;
 
 		public ValueOptional(T value)
 		{
-			Value = value;
+			_value = value;
 		}
 
-		public override int GetHashCode() => Value.GetHashCode();
+		public override int GetHashCode() => _value.GetHashCode();
 
 		public override bool Equals(object? obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			return obj is ValueOptional<T> other && Value.Equals(other.Value);
+			return obj is ValueOptional<T> other && _value.Equals(other._value);
 		}
 
         public override bool Equals(Optional<T>? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return other is ValueOptional<T> && Value.Equals(other.Value);
+            return other is ValueOptional<T> optional && _value.Equals(optional._value);
         }
 
         public override T GetValueOrDefault(T defaultValue)
         {
-            return Value;
+            return _value;
         }
-		
-		public override void Match(Action whenEmpty, Action<T> whenValue)
+
+        public override void WhenValue(Action<T> action)
+        {
+            action(_value);
+        }
+
+        public override void Match(Action whenEmpty, Action<T> whenValue)
 		{
-			whenValue(Value);
+			whenValue(_value);
 		}
 
 		public override Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> bind)
 		{
-			return bind(Value);
+			return bind(_value);
 		}
 
 		public override TResult Match<TResult>(Func<TResult> whenEmpty, Func<T, TResult> whenValue)
 		{
-			return whenValue(Value);
+			return whenValue(_value);
 		}
 	}
 }

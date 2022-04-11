@@ -33,7 +33,11 @@ namespace Maikelsoft.Monads.OptionalImpl
             return defaultValue;
         }
 
-		public override void Match(Action whenEmpty, Action<T> whenValue)
+        public override void WhenValue(Action<T> action)
+        {
+        }
+
+        public override void Match(Action whenEmpty, Action<T> whenValue)
 		{
 			whenEmpty();
 		}
