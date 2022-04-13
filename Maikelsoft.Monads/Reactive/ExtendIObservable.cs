@@ -16,7 +16,7 @@ namespace Maikelsoft.Monads.Reactive
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(either => either.HasLeft).Select(either => either.Left);
+            return source.Where(either => either.HasLeft).Select(either => either.LeftValue);
         }
 
         [Pure]
@@ -24,7 +24,7 @@ namespace Maikelsoft.Monads.Reactive
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(either => either.HasRight).Select(either => either.Right);
+            return source.Where(either => either.HasRight).Select(either => either.RightValue);
         }
 
         [Pure]
@@ -52,17 +52,17 @@ namespace Maikelsoft.Monads.Reactive
         #region Try Monad
 
         [Pure]
-        public static IObservable<T> Values<T>(this IObservable<Try<T>> source)
-            where T : notnull
-        {
-            return source.Where(@try => @try.HasValue).Select(@try => @try.Value);
-        }
-
-        [Pure]
         public static IObservable<Error> Errors<T>(this IObservable<Try<T>> source)
             where T : notnull
         {
-            return source.Where(@try => @try.HasError).Select(@try => @try.Error);
+            return source.Where(@try => @try.Result.HasLeft).Select(@try => @try.Result.LeftValue);
+        }
+
+        [Pure]
+        public static IObservable<T> Values<T>(this IObservable<Try<T>> source)
+            where T : notnull
+        {
+            return source.Where(@try => @try.Result.HasRight).Select(@try => @try.Result.RightValue);
         }
 
         [Pure]

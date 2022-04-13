@@ -17,7 +17,7 @@ namespace Maikelsoft.Monads.Linq
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(either => either.HasLeft).Select(either => either.Left);
+            return source.Where(either => either.HasLeft).Select(either => either.LeftValue);
         }
 
         [Pure]
@@ -25,7 +25,7 @@ namespace Maikelsoft.Monads.Linq
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(either => either.HasRight).Select(either => either.Right);
+            return source.Where(either => either.HasRight).Select(either => either.RightValue);
         }
 
         [Pure]
@@ -53,19 +53,19 @@ namespace Maikelsoft.Monads.Linq
         #region Try Monad
 
         [Pure]
-        public static IEnumerable<T> Values<T>(this IEnumerable<Try<T>> source)
-            where T : notnull
-        {
-            return source.Where(@try => @try.HasValue).Select(@try => @try.Value);
-        }
-
-        [Pure]
         public static IEnumerable<Error> Errors<T>(this IEnumerable<Try<T>> source)
             where T : notnull
         {
-            return source.Where(@try => @try.HasError).Select(@try => @try.Error);
+            return source.Where(@try => @try.Result.HasLeft).Select(@try => @try.Result.LeftValue);
         }
 
+        [Pure]
+        public static IEnumerable<T> Values<T>(this IEnumerable<Try<T>> source)
+            where T : notnull
+        {
+            return source.Where(@try => @try.Result.HasRight).Select(@try => @try.Result.RightValue);
+        }
+        
         [Pure]
         public static IEnumerable<Try<T>> TryMap<TSource, T>(
             this IEnumerable<TSource> source, Func<TSource, T> selector)
