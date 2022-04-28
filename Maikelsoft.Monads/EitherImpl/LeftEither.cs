@@ -22,15 +22,34 @@ namespace Maikelsoft.Monads.EitherImpl
             return new LeftEither<TLeft, TResult>(LeftValue);
         }
 
-        public override Task<Either<TResult, TRight>> BindLeftAsync<TResult>(Func<TLeft, Task<Either<TResult, TRight>>> bind)
+        public override Task<Either<TResult, TRight>> BindLeft<TResult>(Func<TLeft, Task<Either<TResult, TRight>>> bind)
         {
             return bind(LeftValue);
         }
 
-        public override Task<Either<TLeft, TResult>> BindRightAsync<TResult>(Func<TRight, Task<Either<TLeft, TResult>>> bind)
+        public override Task<Either<TLeft, TResult>> BindRight<TResult>(Func<TRight, Task<Either<TLeft, TResult>>> bind)
         {
             Either<TLeft, TResult> result = new LeftEither<TLeft, TResult>(LeftValue);
             return Task.FromResult(result);
+        }
+
+        public override void WhenLeft(Action<TLeft> action)
+        {
+            action(LeftValue);
+        }
+
+        public override Task WhenLeft(Func<TLeft, Task> func)
+        {
+            return func(LeftValue);
+        }
+
+        public override void WhenRight(Action<TRight> action)
+        {
+        }
+
+        public override Task WhenRight(Func<TRight, Task> func)
+        {
+            return Task.CompletedTask;
         }
 
         public override TLeft GetLeftOrDefault(TLeft defaultValue)
@@ -58,12 +77,12 @@ namespace Maikelsoft.Monads.EitherImpl
             whenLeft(LeftValue);
         }
 
-        public override Task MatchAsync(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight)
+        public override Task Match(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight)
         {
             return whenLeft(LeftValue);
         }
 
-        public override Task<TResult> MatchAsync<TResult>(Func<TLeft, Task<TResult>> whenLeft, Func<TRight, Task<TResult>> whenRight)
+        public override Task<TResult> Match<TResult>(Func<TLeft, Task<TResult>> whenLeft, Func<TRight, Task<TResult>> whenRight)
         {
             return whenLeft(LeftValue);
         }

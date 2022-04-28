@@ -22,15 +22,34 @@ namespace Maikelsoft.Monads.EitherImpl
             return bind(RightValue);
         }
 
-        public override Task<Either<TResult, TRight>> BindLeftAsync<TResult>(Func<TLeft, Task<Either<TResult, TRight>>> bind)
+        public override Task<Either<TResult, TRight>> BindLeft<TResult>(Func<TLeft, Task<Either<TResult, TRight>>> bind)
         {
             Either<TResult, TRight> result = new RightEither<TResult, TRight>(RightValue);
             return Task.FromResult(result);
         }
 
-        public override Task<Either<TLeft, TResult>> BindRightAsync<TResult>(Func<TRight, Task<Either<TLeft, TResult>>> bind)
+        public override Task<Either<TLeft, TResult>> BindRight<TResult>(Func<TRight, Task<Either<TLeft, TResult>>> bind)
         {
             return bind(RightValue);
+        }
+
+        public override void WhenLeft(Action<TLeft> action)
+        {
+        }
+
+        public override Task WhenLeft(Func<TLeft, Task> func)
+        {
+            return Task.CompletedTask;
+        }
+
+        public override void WhenRight(Action<TRight> action)
+        {
+            action(RightValue);
+        }
+
+        public override Task WhenRight(Func<TRight, Task> func)
+        {
+            return func(RightValue);
         }
 
         public override TLeft GetLeftOrDefault(TLeft defaultValue)
@@ -58,12 +77,13 @@ namespace Maikelsoft.Monads.EitherImpl
 			whenRight(RightValue);
 		}
 
-        public override Task MatchAsync(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight)
+        public override Task Match(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight)
         {
             return whenRight(RightValue);
         }
 
-        public override Task<TResult> MatchAsync<TResult>(Func<TLeft, Task<TResult>> whenLeft, Func<TRight, Task<TResult>> whenRight)
+        public override Task<TResult> Match<TResult>(Func<TLeft, Task<TResult>> whenLeft, 
+            Func<TRight, Task<TResult>> whenRight)
         {
             return whenRight(RightValue);
         }
