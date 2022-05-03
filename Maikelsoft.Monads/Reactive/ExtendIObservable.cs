@@ -16,7 +16,15 @@ namespace Maikelsoft.Monads.Reactive
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(either => either.HasLeft).Select(either => either.LeftValue);
+            return Observable.Create<TLeft>(observer =>
+            {
+                void OnNext(Either<TLeft, TRight> @try)
+                {
+                    @try.WhenLeft(observer.OnNext);
+                }
+
+                return source.Subscribe(OnNext, observer.OnError, observer.OnCompleted);
+            });
         }
 
         [Pure]
@@ -24,7 +32,15 @@ namespace Maikelsoft.Monads.Reactive
             where TLeft : notnull
             where TRight : notnull
         {
-            return source.Where(either => either.HasRight).Select(either => either.RightValue);
+            return Observable.Create<TRight>(observer =>
+            {
+                void OnNext(Either<TLeft, TRight> @try)
+                {
+                    @try.WhenRight(observer.OnNext);
+                }
+
+                return source.Subscribe(OnNext, observer.OnError, observer.OnCompleted);
+            });
         }
 
         [Pure]
@@ -55,14 +71,30 @@ namespace Maikelsoft.Monads.Reactive
         public static IObservable<Error> Errors<T>(this IObservable<Try<T>> source)
             where T : notnull
         {
-            return source.Where(@try => @try.Result.HasLeft).Select(@try => @try.Result.LeftValue);
+            return Observable.Create<Error>(observer =>
+            {
+                void OnNext(Try<T> @try)
+                {
+                    @try.WhenError(observer.OnNext);
+                }
+
+                return source.Subscribe(OnNext, observer.OnError, observer.OnCompleted);
+            });
         }
 
         [Pure]
         public static IObservable<T> Values<T>(this IObservable<Try<T>> source)
             where T : notnull
         {
-            return source.Where(@try => @try.Result.HasRight).Select(@try => @try.Result.RightValue);
+            return Observable.Create<T>(observer =>
+            {
+                void OnNext(Try<T> @try)
+                {
+                    @try.WhenValue(observer.OnNext);
+                }
+
+                return source.Subscribe(OnNext, observer.OnError, observer.OnCompleted);
+            });
         }
 
         [Pure]
@@ -96,6 +128,21 @@ namespace Maikelsoft.Monads.Reactive
         #region Optional Monad
 
         [Pure]
+        public static IObservable<T> Values<T>(this IObservable<Optional<T>> source)
+            where T : notnull
+        {
+            return Observable.Create<T>(observer =>
+            {
+                void OnNext(Optional<T> optional)
+                {
+                    optional.WhenValue(observer.OnNext);
+                }
+
+                return source.Subscribe(OnNext, observer.OnError, observer.OnCompleted);
+            });
+        }
+
+        [Pure]
         public static IObservable<Optional<T>> MapValues<TSource, T>(
             this IObservable<Optional<TSource>> source, Func<TSource, T> selector)
             where TSource : notnull
@@ -105,8 +152,7 @@ namespace Maikelsoft.Monads.Reactive
         }
 
         public static IObservable<TResult> Match<T, TResult>(this IObservable<Optional<T>> source,
-            Func<TResult> whenEmpty,
-            Func<T, TResult> whenValue)
+            Func<TResult> whenEmpty, Func<T, TResult> whenValue)
             where T : notnull
         {
             return source.Select(optional => optional.Match(whenEmpty, whenValue));

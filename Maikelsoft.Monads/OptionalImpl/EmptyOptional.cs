@@ -10,7 +10,10 @@ namespace Maikelsoft.Monads.OptionalImpl
 
         public static EmptyOptional<T> Instance => _instance ??= new EmptyOptional<T>();
 
+        [Obsolete]
         public override T Value => throw new InvalidOperationException();
+        
+        [Obsolete]
         public override bool HasValue => false;
 
         public override int GetHashCode() => typeof(T).GetHashCode();

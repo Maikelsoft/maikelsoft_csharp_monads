@@ -8,8 +8,10 @@ namespace Maikelsoft.Monads.OptionalImpl
     {
         private readonly T _value;
 
+        [Obsolete]
         public override T Value => _value;
 
+        [Obsolete]
         public override bool HasValue => true;
 
         public ValueOptional(T value)

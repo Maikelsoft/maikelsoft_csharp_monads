@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Maikelsoft.Monads.Linq
 {
@@ -111,7 +112,7 @@ namespace Maikelsoft.Monads.Linq
             where TSource : notnull
             where TResult : notnull
         {
-            return source.Select(optional => optional.Bind(value => Optional.From(selector(value))));
+            return source.Select(optional => optional.Bind(value => Optional.FromValue(selector(value))));
         }
 
         public static IEnumerable<TResult> Match<T, TResult>(this IEnumerable<Optional<T>> source, Func<TResult> whenEmpty,
