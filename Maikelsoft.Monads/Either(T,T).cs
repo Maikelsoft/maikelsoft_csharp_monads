@@ -41,16 +41,16 @@ namespace Maikelsoft.Monads
             where TResult : notnull;
 
         public abstract void WhenLeft(Action<TLeft> action);
-        public abstract Task WhenLeft(Func<TLeft, Task> func);
+        public abstract Task WhenLeftAsync(Func<TLeft, Task> func);
         public abstract void WhenRight(Action<TRight> action);
-        public abstract Task WhenRight(Func<TRight, Task> func);
+        public abstract Task WhenRightAsync(Func<TRight, Task> func);
 
         public abstract TLeft GetLeftOrDefault(TLeft defaultValue);
         public abstract TRight GetRightOrDefault(TRight defaultValue);
         public abstract TResult Match<TResult>(Func<TLeft, TResult> whenLeft, Func<TRight, TResult> whenRight);
         public abstract void Match(Action<TLeft> whenLeft, Action<TRight> whenRight);
-        public abstract Task Match(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight);
-        public abstract Task<TResult> Match<TResult>(Func<TLeft, Task<TResult>> whenLeft, Func<TRight, Task<TResult>> whenRight);
+        public abstract Task MatchAsync(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight);
+        public abstract Task<TResult> MatchAsync<TResult>(Func<TLeft, Task<TResult>> whenLeft, Func<TRight, Task<TResult>> whenRight);
         public abstract bool Equals(Either<TLeft, TRight>? other);
 
         #endregion

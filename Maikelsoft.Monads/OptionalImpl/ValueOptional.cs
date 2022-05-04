@@ -8,12 +8,6 @@ namespace Maikelsoft.Monads.OptionalImpl
     {
         private readonly T _value;
 
-        [Obsolete]
-        public override T Value => _value;
-
-        [Obsolete]
-        public override bool HasValue => true;
-
         public ValueOptional(T value)
         {
             _value = value;
@@ -45,7 +39,7 @@ namespace Maikelsoft.Monads.OptionalImpl
             action(_value);
         }
 
-        public override Task WhenValue(Func<T, Task> func)
+        public override Task WhenValueAsync(Func<T, Task> func)
         {
             return func(_value);
         }
@@ -55,7 +49,7 @@ namespace Maikelsoft.Monads.OptionalImpl
             whenValue(_value);
         }
 
-        public override Task Match(Func<Task> whenEmpty, Func<T, Task> whenValue)
+        public override Task MatchAsynnc(Func<Task> whenEmpty, Func<T, Task> whenValue)
         {
             return whenValue(_value);
         }
@@ -70,7 +64,7 @@ namespace Maikelsoft.Monads.OptionalImpl
             return whenValue(_value);
         }
 
-        public override Task<TResult> Match<TResult>(Func<Task<TResult>> whenEmpty, Func<T, Task<TResult>> whenValue)
+        public override Task<TResult> MatchAsync<TResult>(Func<Task<TResult>> whenEmpty, Func<T, Task<TResult>> whenValue)
         {
             return whenValue(_value);
         }

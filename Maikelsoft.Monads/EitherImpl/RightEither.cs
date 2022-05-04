@@ -37,7 +37,7 @@ namespace Maikelsoft.Monads.EitherImpl
         {
         }
 
-        public override Task WhenLeft(Func<TLeft, Task> func)
+        public override Task WhenLeftAsync(Func<TLeft, Task> func)
         {
             return Task.CompletedTask;
         }
@@ -47,7 +47,7 @@ namespace Maikelsoft.Monads.EitherImpl
             action(RightValue);
         }
 
-        public override Task WhenRight(Func<TRight, Task> func)
+        public override Task WhenRightAsync(Func<TRight, Task> func)
         {
             return func(RightValue);
         }
@@ -77,12 +77,12 @@ namespace Maikelsoft.Monads.EitherImpl
 			whenRight(RightValue);
 		}
 
-        public override Task Match(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight)
+        public override Task MatchAsync(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight)
         {
             return whenRight(RightValue);
         }
 
-        public override Task<TResult> Match<TResult>(Func<TLeft, Task<TResult>> whenLeft, 
+        public override Task<TResult> MatchAsync<TResult>(Func<TLeft, Task<TResult>> whenLeft, 
             Func<TRight, Task<TResult>> whenRight)
         {
             return whenRight(RightValue);

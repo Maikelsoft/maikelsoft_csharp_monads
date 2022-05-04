@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Maikelsoft.Monads.Linq
 {

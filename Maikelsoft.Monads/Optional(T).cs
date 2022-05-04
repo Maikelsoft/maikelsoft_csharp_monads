@@ -8,14 +8,7 @@ namespace Maikelsoft.Monads
     public abstract class Optional<T> : IEquatable<Optional<T>>
         where T : notnull
     {
-        [Pure]
         public static Optional<T> Empty => EmptyOptional<T>.Instance;
-
-        [Obsolete("Use Match() or GetValueOrDefault()")]
-        public abstract bool HasValue { get; }
-
-        [Obsolete("Use Match() or GetValueOrDefault()")]
-        public abstract T Value { get; }
 
         public abstract T GetValueOrDefault(T defaultValue);
 
@@ -26,12 +19,11 @@ namespace Maikelsoft.Monads
             where TResult : notnull;
 
         public abstract void WhenValue(Action<T> action);
-        public abstract Task WhenValue(Func<T, Task> func);
-
+        public abstract Task WhenValueAsync(Func<T, Task> func);
         public abstract void Match(Action whenEmpty, Action<T> whenValue);
-        public abstract Task Match(Func<Task> whenEmpty, Func<T, Task> whenValue);
+        public abstract Task MatchAsynnc(Func<Task> whenEmpty, Func<T, Task> whenValue);
         public abstract TResult Match<TResult>(Func<TResult> whenEmpty, Func<T, TResult> whenValue);
-        public abstract Task<TResult> Match<TResult>(Func<Task<TResult>> whenEmpty, Func<T, Task<TResult>> whenValue);
+        public abstract Task<TResult> MatchAsync<TResult>(Func<Task<TResult>> whenEmpty, Func<T, Task<TResult>> whenValue);
 
         [Pure]
         public Optional<TResult> Map<TResult>(Func<T, TResult> selector)

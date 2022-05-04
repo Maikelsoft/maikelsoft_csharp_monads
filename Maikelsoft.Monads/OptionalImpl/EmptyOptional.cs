@@ -10,12 +10,6 @@ namespace Maikelsoft.Monads.OptionalImpl
 
         public static EmptyOptional<T> Instance => _instance ??= new EmptyOptional<T>();
 
-        [Obsolete]
-        public override T Value => throw new InvalidOperationException();
-        
-        [Obsolete]
-        public override bool HasValue => false;
-
         public override int GetHashCode() => typeof(T).GetHashCode();
 
         public override bool Equals(object? obj)
@@ -41,7 +35,7 @@ namespace Maikelsoft.Monads.OptionalImpl
         {
         }
 
-        public override Task WhenValue(Func<T, Task> func)
+        public override Task WhenValueAsync(Func<T, Task> func)
         {
             return Task.CompletedTask;
         }
@@ -51,7 +45,7 @@ namespace Maikelsoft.Monads.OptionalImpl
             whenEmpty();
         }
 
-        public override Task Match(Func<Task> whenEmpty, Func<T, Task> whenValue)
+        public override Task MatchAsynnc(Func<Task> whenEmpty, Func<T, Task> whenValue)
         {
             return whenEmpty();
         }
@@ -61,7 +55,7 @@ namespace Maikelsoft.Monads.OptionalImpl
             return whenEmpty();
         }
 
-        public override Task<TResult> Match<TResult>(Func<Task<TResult>> whenEmpty, Func<T, Task<TResult>> whenValue)
+        public override Task<TResult> MatchAsync<TResult>(Func<Task<TResult>> whenEmpty, Func<T, Task<TResult>> whenValue)
         {
             return whenEmpty();
         }
