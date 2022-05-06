@@ -10,7 +10,7 @@ namespace Maikelsoft.Monads
         public string? Details { get; }
         public Error? InnerError { get; }
 
-        public Error(string message, string? details, Error? innerError)
+        public Error(string message, string? details = null, Error? innerError = null)
         {
             Message = message;
             Details = details;
