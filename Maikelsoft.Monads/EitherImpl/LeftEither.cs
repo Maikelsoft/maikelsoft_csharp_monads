@@ -22,12 +22,12 @@ namespace Maikelsoft.Monads.EitherImpl
             return new LeftEither<TLeft, TResult>(LeftValue);
         }
 
-        public override Task<Either<TResult, TRight>> BindLeft<TResult>(Func<TLeft, Task<Either<TResult, TRight>>> bind)
+        public override Task<Either<TResult, TRight>> BindLeftAsync<TResult>(Func<TLeft, Task<Either<TResult, TRight>>> bind)
         {
             return bind(LeftValue);
         }
 
-        public override Task<Either<TLeft, TResult>> BindRight<TResult>(Func<TRight, Task<Either<TLeft, TResult>>> bind)
+        public override Task<Either<TLeft, TResult>> BindRightAsync<TResult>(Func<TRight, Task<Either<TLeft, TResult>>> bind)
         {
             Either<TLeft, TResult> result = new LeftEither<TLeft, TResult>(LeftValue);
             return Task.FromResult(result);

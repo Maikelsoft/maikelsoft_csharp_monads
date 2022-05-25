@@ -45,7 +45,7 @@ namespace Maikelsoft.Monads.OptionalImpl
             whenEmpty();
         }
 
-        public override Task MatchAsynnc(Func<Task> whenEmpty, Func<T, Task> whenValue)
+        public override Task MatchAsync(Func<Task> whenEmpty, Func<T, Task> whenValue)
         {
             return whenEmpty();
         }

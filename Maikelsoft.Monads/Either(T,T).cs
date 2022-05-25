@@ -29,27 +29,26 @@ namespace Maikelsoft.Monads
             where TResult : notnull;
 
         [Pure]
+        public abstract Task<Either<TResult, TRight>> BindLeftAsync<TResult>(Func<TLeft, Task<Either<TResult, TRight>>> bind)
+            where TResult : notnull;
+
+        [Pure]
         public abstract Either<TLeft, TResult> BindRight<TResult>(Func<TRight, Either<TLeft, TResult>> bind)
             where TResult : notnull;
 
         [Pure]
-        public abstract Task<Either<TResult, TRight>> BindLeft<TResult>(Func<TLeft, Task<Either<TResult, TRight>>> bind)
-            where TResult : notnull;
-
-        [Pure]
-        public abstract Task<Either<TLeft, TResult>> BindRight<TResult>(Func<TRight, Task<Either<TLeft, TResult>>> bind)
+        public abstract Task<Either<TLeft, TResult>> BindRightAsync<TResult>(Func<TRight, Task<Either<TLeft, TResult>>> bind)
             where TResult : notnull;
 
         public abstract void WhenLeft(Action<TLeft> action);
         public abstract Task WhenLeftAsync(Func<TLeft, Task> func);
         public abstract void WhenRight(Action<TRight> action);
         public abstract Task WhenRightAsync(Func<TRight, Task> func);
-
         public abstract TLeft GetLeftOrDefault(TLeft defaultValue);
         public abstract TRight GetRightOrDefault(TRight defaultValue);
-        public abstract TResult Match<TResult>(Func<TLeft, TResult> whenLeft, Func<TRight, TResult> whenRight);
         public abstract void Match(Action<TLeft> whenLeft, Action<TRight> whenRight);
         public abstract Task MatchAsync(Func<TLeft, Task> whenLeft, Func<TRight, Task> whenRight);
+        public abstract TResult Match<TResult>(Func<TLeft, TResult> whenLeft, Func<TRight, TResult> whenRight);
         public abstract Task<TResult> MatchAsync<TResult>(Func<TLeft, Task<TResult>> whenLeft, Func<TRight, Task<TResult>> whenRight);
         public abstract bool Equals(Either<TLeft, TRight>? other);
 
@@ -59,9 +58,16 @@ namespace Maikelsoft.Monads
         public Either<TResult, TRight> MapLeft<TResult>(Func<TLeft, TResult> selector) 
             where TResult : notnull
         {
-            return BindLeft(left =>
+            return BindLeft(left => Either<TResult, TRight>.FromLeft(selector(left)));
+        }
+
+        [Pure]
+        public Task<Either<TResult, TRight>> MapLeftAsync<TResult>(Func<TLeft, Task<TResult>> selector) 
+            where TResult : notnull
+        {
+            return BindLeftAsync(async left =>
             {
-                TResult result = selector(left);
+                TResult result = await selector(left);
                 return Either<TResult, TRight>.FromLeft(result);
             });
         }
@@ -70,29 +76,14 @@ namespace Maikelsoft.Monads
         public Either<TLeft, TResult> MapRight<TResult>(Func<TRight, TResult> selector) 
             where TResult : notnull
         {
-            return BindRight(right =>
-            {
-                TResult result = selector(right);
-                return Either<TLeft, TResult>.FromRight(result);
-            });
+            return BindRight(right => Either<TLeft, TResult>.FromRight(selector(right)));
         }
 
         [Pure]
-        public Task<Either<TResult, TRight>> MapLeft<TResult>(Func<TLeft, Task<TResult>> selector) 
+        public Task<Either<TLeft, TResult>> MapRightAsync<TResult>(Func<TRight, Task<TResult>> selector) 
             where TResult : notnull
         {
-            return BindLeft(async left =>
-            {
-                TResult result = await selector(left);
-                return Either<TResult, TRight>.FromLeft(result);
-            });
-        }
-
-        [Pure]
-        public Task<Either<TLeft, TResult>> MapRight<TResult>(Func<TRight, Task<TResult>> selector) 
-            where TResult : notnull
-        {
-            return BindRight(async right =>
+            return BindRightAsync(async right =>
             {
                 TResult result = await selector(right);
                 return Either<TLeft, TResult>.FromRight(result);

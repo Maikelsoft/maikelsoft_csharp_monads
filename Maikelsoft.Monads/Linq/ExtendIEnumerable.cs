@@ -56,14 +56,14 @@ namespace Maikelsoft.Monads.Linq
         public static IEnumerable<Error> Errors<T>(this IEnumerable<Try<T>> source)
             where T : notnull
         {
-            return source.Where(@try => @try.Result.HasLeft).Select(@try => @try.Result.LeftValue);
+            return source.Where(@try => @try.Either.HasLeft).Select(@try => @try.Either.LeftValue);
         }
 
         [Pure]
         public static IEnumerable<T> Values<T>(this IEnumerable<Try<T>> source)
             where T : notnull
         {
-            return source.Where(@try => @try.Result.HasRight).Select(@try => @try.Result.RightValue);
+            return source.Where(@try => @try.Either.HasRight).Select(@try => @try.Either.RightValue);
         }
         
         [Pure]

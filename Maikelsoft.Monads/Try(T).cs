@@ -7,61 +7,69 @@ namespace Maikelsoft.Monads
     public sealed class Try<T> : IEquatable<Try<T>>
         where T : notnull
     {
-        public Either<Error, T> Result { get; }
+        public Either<Error, T> Either { get; }
 
-        internal Try(Either<Error, T> result)
+        internal Try(Either<Error, T> either)
         {
-            Result = result;
+            Either = either;
+        }
+
+        [Pure]
+        public Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind)
+            where TResult : notnull
+        {
+            Either<Error, TResult> result = Either.BindRight(value => bind(value).Either);
+            return new Try<TResult>(result);
         }
 
         [Pure]
         public Try<TResult> Map<TResult>(Func<T, TResult> selector) where TResult : notnull
         {
-            Either<Error, TResult> result = Result.MapRight(selector);
+            Either<Error, TResult> result = Either.MapRight(selector);
             return new Try<TResult>(result);
         }
 
         [Pure]
-        public async Task<Try<TResult>> Map<TResult>(Func<T, Task<TResult>> selector) where TResult : notnull
+        public async Task<Try<TResult>> MapAsync<TResult>(Func<T, Task<TResult>> selector) where TResult : notnull
         {
-            Either<Error, TResult> result = await Result.MapRight(selector);
+            Either<Error, TResult> result = await Either.MapRightAsync(selector);
             return new Try<TResult>(result);
         }
 
         [Pure]
         public Try<TResult> TryMap<TResult>(Func<T, TResult> selector) where TResult : notnull
         {
-            return Result.Match(Try.FromError<TResult>, value => Try.Create(() => selector(value)));
+            return Either.Match(Try.FromError<TResult>, value => Try.Create(() => selector(value)));
         }
 
         [Pure]
-        public Task<Try<TResult>> TryMap<TResult>(Func<T, Task<TResult>> selector) where TResult : notnull
+        public Task<Try<TResult>> TryMapAsync<TResult>(Func<T, Task<TResult>> selector) where TResult : notnull
         {
-            return Result.MatchAsync(error =>
+            return Either.MatchAsync(error =>
             {
                 Try<TResult> result = Try.FromError<TResult>(error);
                 return Task.FromResult(result);
             }, value => Try.Create(() => selector(value)));
         }
 
-        public void WhenError(Action<Error> action) => Result.WhenLeft(action);
-        public Task WhenErrorAsync(Func<Error, Task> func) => Result.WhenLeftAsync(func);
-        public void WhenValue(Action<T> action) => Result.WhenRight(action);
-        public Task WhenValueAsync(Func<T, Task> func) => Result.WhenRightAsync(func);
+        public void WhenError(Action<Error> action) => Either.WhenLeft(action);
+        public Task WhenErrorAsync(Func<Error, Task> func) => Either.WhenLeftAsync(func);
+        public void WhenValue(Action<T> action) => Either.WhenRight(action);
+        public Task WhenValueAsync(Func<T, Task> func) => Either.WhenRightAsync(func);
 
-        public TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue) =>
-            Result.Match(whenError, whenValue);
-
-        public void Match(Action<Error> whenError, Action<T> whenValue) => Result.Match(whenError, whenValue);
+        public void Match(Action<Error> whenError, Action<T> whenValue) => Either.Match(whenError, whenValue);
 
         public Task MatchAsync(Func<Error, Task> whenError, Func<T, Task> whenValue) =>
-            Result.MatchAsync(whenError, whenValue);
+            Either.MatchAsync(whenError, whenValue);
+
+        public TResult Match<TResult>(Func<Error, TResult> whenError, Func<T, TResult> whenValue) =>
+            Either.Match(whenError, whenValue);
 
         public Task<TResult> MatchAsync<TResult>(Func<Error, Task<TResult>> whenError,
             Func<T, Task<TResult>> whenValue) =>
-            Result.MatchAsync(whenError, whenValue);
+            Either.MatchAsync(whenError, whenValue);
 
-        public T GetValueOrDefault(T defaultValue) => Result.GetRightOrDefault(defaultValue);
+        public T GetValueOrDefault(T defaultValue) => Either.GetRightOrDefault(defaultValue);
 
         #region Equality members
 
@@ -69,7 +77,7 @@ namespace Maikelsoft.Monads
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Result.Equals(other.Result);
+            return Either.Equals(other.Either);
         }
 
         public override bool Equals(object? obj)
@@ -79,7 +87,7 @@ namespace Maikelsoft.Monads
 
         public override int GetHashCode()
         {
-            return Result.GetHashCode();
+            return Either.GetHashCode();
         }
 
         #endregion
