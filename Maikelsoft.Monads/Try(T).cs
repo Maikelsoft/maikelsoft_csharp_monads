@@ -18,8 +18,20 @@ namespace Maikelsoft.Monads
         public Try<TResult> Bind<TResult>(Func<T, Try<TResult>> bind)
             where TResult : notnull
         {
-            Either<Error, TResult> result = Either.BindRight(value => bind(value).Either);
-            return new Try<TResult>(result);
+            Either<Error, TResult> either = Either.BindRight(value => bind(value).Either);
+            return new Try<TResult>(either);
+        }
+
+        [Pure]
+        public async Task<Try<TResult>> BindAsync<TResult>(Func<T, Task<Try<TResult>>> bind)
+            where TResult : notnull
+        {
+            Either<Error, TResult> either = await Either.BindRightAsync(async value =>
+            {
+                Try<TResult> inner = await bind(value);
+                return inner.Either;
+            });
+            return new Try<TResult>(either);
         }
 
         [Pure]
