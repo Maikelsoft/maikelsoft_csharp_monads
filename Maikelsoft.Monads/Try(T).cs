@@ -61,14 +61,13 @@ namespace Maikelsoft.Monads
             {
                 Try<TResult> result = Try.FromError<TResult>(error);
                 return Task.FromResult(result);
-            }, value => Try.Create(() => selector(value)));
+            }, value => Try.CreateAsync(() => selector(value)));
         }
 
         public void WhenError(Action<Error> action) => Either.WhenLeft(action);
         public Task WhenErrorAsync(Func<Error, Task> func) => Either.WhenLeftAsync(func);
         public void WhenValue(Action<T> action) => Either.WhenRight(action);
         public Task WhenValueAsync(Func<T, Task> func) => Either.WhenRightAsync(func);
-
         public void Match(Action<Error> whenError, Action<T> whenValue) => Either.Match(whenError, whenValue);
 
         public Task MatchAsync(Func<Error, Task> whenError, Func<T, Task> whenValue) =>

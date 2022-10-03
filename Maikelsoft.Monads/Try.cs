@@ -16,7 +16,7 @@ namespace Maikelsoft.Monads
         [Pure]
         public static Try<T> FromError<T>(string errorMessage, string? details = null) where T : notnull
         {
-            Error error = new Error(errorMessage, details, null);
+            Error error = new(errorMessage, details);
             return FromError<T>(error);
         }
 
@@ -28,9 +28,9 @@ namespace Maikelsoft.Monads
         }
 
         [Pure]
-        public static async Task<Try<T>> Create<T>(Func<Task<T>> func) where T : notnull
+        public static async Task<Try<T>> CreateAsync<T>(Func<Task<T>> func) where T : notnull
         {
-            Either<Error, T> result = await GetResult(func);
+            Either<Error, T> result = await GetResultAsync(func);
             return new Try<T>(result);
         }
 
@@ -64,7 +64,8 @@ namespace Maikelsoft.Monads
             }
         }
 
-        private static async Task<Either<Error, T>> GetResult<T>(Func<Task<T>> func) where T : notnull
+        private static async Task<Either<Error, T>> GetResultAsync<T>(Func<Task<T>> func) 
+            where T : notnull
         {
             try
             {
