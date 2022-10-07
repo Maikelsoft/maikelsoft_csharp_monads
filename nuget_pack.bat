@@ -8,6 +8,6 @@ copy Maikelsoft.Monads\bin\Release\net6.0\*.dll NuGet\lib\net6.0\
 copy Maikelsoft.Monads\bin\Release\net6.0\*.xml NuGet\lib\net6.0\
 
 echo Building NuGet package...
-NuGet.exe pack NuGet\Maikelsoft.Monads.nuspec -OutputDirectory C:\Development\nuget_packages
+NuGet.exe pack NuGet\Maikelsoft.Monads.nuspec -OutputDirectory \\192.168.3.3\Software\Nuget
 
 pause
